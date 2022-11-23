@@ -3,11 +3,11 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path"
 	"path/filepath"
 	"sort"
 
+	"github.com/cqroot/dotm/pkg/common"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -63,18 +63,15 @@ func (c *Config) Read() error {
 			if dot.Type == "" {
 				dot.Type = "config"
 			}
+			dir, err := common.DotDir(dot.Type)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
 			switch dot.Type {
 			case "config":
-				dir, err := os.UserConfigDir()
-				if err != nil {
-
-				}
 				dot.Target = filepath.Join(dir, dot.Name)
 			case "home":
-				dir, err := os.UserHomeDir()
-				if err != nil {
-
-				}
 				dot.Target = filepath.Join(dir, fmt.Sprintf(".%s", dot.Name))
 			}
 		}
