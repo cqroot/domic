@@ -17,6 +17,7 @@ type Dot struct {
 	Path   string
 	Target string
 	Type   string
+	Exec   string
 }
 
 type Config struct {

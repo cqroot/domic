@@ -8,6 +8,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
+	"github.com/cqroot/dotm/pkg/common"
 	"github.com/cqroot/dotm/pkg/config"
 	"github.com/cqroot/dotm/pkg/symlink"
 )
@@ -66,21 +67,25 @@ func checkLink(cfg *config.Config, op int) {
 		var code int
 		var descr string
 
-		switch op {
-		case OpNothing:
-			code, descr = symlink.CheckStatus(dot.Source, dot.Target)
-		case OpLink:
-			code, descr = symlink.LinkAndCheckStatus(dot.Source, dot.Target)
-		case OpUnlink:
-			code, descr = symlink.UnlinkAndCheckStatus(dot.Source, dot.Target)
-		}
+		if dot.Exec != "" && !common.CommandExists(dot.Exec) {
+			descr = text.FgYellow.Sprint("Ignored")
+		} else {
+			switch op {
+			case OpNothing:
+				code, descr = symlink.CheckStatus(dot.Source, dot.Target)
+			case OpLink:
+				code, descr = symlink.LinkAndCheckStatus(dot.Source, dot.Target)
+			case OpUnlink:
+				code, descr = symlink.UnlinkAndCheckStatus(dot.Source, dot.Target)
+			}
 
-		if code == symlink.StatusOK {
-			descr = text.FgGreen.Sprint(descr)
-		} else if code == symlink.StatusLinked {
-			descr = text.FgYellow.Sprint(descr)
-		} else if code == symlink.StatusError {
-			descr = text.FgRed.Sprint(descr)
+			if code == symlink.StatusOK {
+				descr = text.FgGreen.Sprint(descr)
+			} else if code == symlink.StatusLinked {
+				descr = text.FgYellow.Sprint(descr)
+			} else if code == symlink.StatusError {
+				descr = text.FgRed.Sprint(descr)
+			}
 		}
 
 		t.AppendRow([]interface{}{idx, dot.Source, dot.Target, descr})
