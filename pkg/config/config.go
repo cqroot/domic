@@ -83,6 +83,9 @@ func (c *Config) Read() error {
 
 	// Sort slice to ensure that the order of each output result is the same
 	sort.Slice(c.Dots, func(i, j int) bool {
+		if c.Dots[i].Type != c.Dots[j].Type {
+			return c.Dots[i].Type < c.Dots[j].Type
+		}
 		return c.Dots[i].Name < c.Dots[j].Name
 	})
 
