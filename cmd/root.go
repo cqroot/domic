@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	verbose bool
 	rootCmd = &cobra.Command{
 		Use:   "dm",
 		Short: "DotM - Manage dotfiles more easily.",

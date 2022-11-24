@@ -7,7 +7,7 @@
 
   <p>
     <a href="https://github.com/cqroot/dotm/actions">
-      <img src="https://github.com/cqroot/dotm/workflows/test/badge.svg" alt="Action Status" />
+      <img src="https://github.com/cqroot/dotm/workflows/Test/badge.svg" alt="Action Status" />
     </a>
   </p>
 </div>

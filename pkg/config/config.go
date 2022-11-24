@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
 	"sort"
@@ -54,7 +54,7 @@ func New(basePath string, configPath string) (*Config, error) {
 }
 
 func (c *Config) Read() error {
-	data, err := ioutil.ReadFile(c.ConfigPath)
+	data, err := os.ReadFile(c.ConfigPath)
 	if err != nil {
 		return err
 	}
