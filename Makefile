@@ -16,3 +16,7 @@ install: build
 .PHONY: uninstall
 uninstall:
 	rm -f $${GOPATH}/bin/$(PROJ_NAME)
+
+.PHONY: test
+test:
+	go test -v ./...

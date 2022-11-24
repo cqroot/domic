@@ -12,12 +12,17 @@ import (
 )
 
 type Dot struct {
-	Name   string
-	Source string
-	Path   string
-	Target string
-	Type   string
-	Exec   string
+	Name   string // The name of the file or folder itself
+	Source string // Absolute path to source file
+	Target string // Absolute path to target file
+
+	// Relative path to source file
+	RelativePath string `toml:"relative_path"`
+
+	// config: ~/.config/xxx or home: ~/.xxx
+	TargetType string `toml:"target_type"`
+
+	Exec string
 }
 
 type Config struct {
@@ -27,14 +32,24 @@ type Config struct {
 }
 
 func New(basePath string, configPath string) (*Config, error) {
+	basePath, err := filepath.Abs(basePath)
+	if err != nil {
+		return nil, err
+	}
+	configPath, err = filepath.Abs(configPath)
+	if err != nil {
+		return nil, err
+	}
+
 	config := Config{
 		BasePath:   basePath,
 		ConfigPath: configPath,
 	}
-	err := config.Read()
+	err = config.Read()
 	if err != nil {
 		return nil, err
 	}
+
 	return &config, nil
 }
 
@@ -51,24 +66,24 @@ func (c *Config) Read() error {
 	}
 
 	for name, dot := range cfg {
-		if dot.Path == "" {
-			dot.Path = name
+		if dot.RelativePath == "" {
+			dot.RelativePath = name
 		}
-		dot.Name = path.Base(dot.Path)
-		dot.Source = path.Join(c.BasePath, dot.Path)
+		dot.Name = path.Base(dot.RelativePath)
+		dot.Source = path.Join(c.BasePath, dot.RelativePath)
 
 		// If user does not specify a target, the target will be generated
 		// according to the type.
 		if dot.Target == "" {
-			if dot.Type == "" {
-				dot.Type = "config"
+			if dot.TargetType == "" {
+				dot.TargetType = "config"
 			}
-			dir, err := common.DotDir(dot.Type)
+			dir, err := common.DotDir(dot.TargetType)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			switch dot.Type {
+			switch dot.TargetType {
 			case "config":
 				dot.Target = filepath.Join(dir, dot.Name)
 			case "home":
@@ -81,8 +96,8 @@ func (c *Config) Read() error {
 
 	// Sort slice to ensure that the order of each output result is the same
 	sort.Slice(c.Dots, func(i, j int) bool {
-		if c.Dots[i].Type != c.Dots[j].Type {
-			return c.Dots[i].Type < c.Dots[j].Type
+		if c.Dots[i].TargetType != c.Dots[j].TargetType {
+			return c.Dots[i].TargetType < c.Dots[j].TargetType
 		}
 		return c.Dots[i].Name < c.Dots[j].Name
 	})

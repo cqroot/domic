@@ -1,0 +1,7 @@
+[tmux]
+exec = "tmux"
+
+[vim]
+relative_path = "vim/vimrc"
+target_type = "home"
+exec = "vim"
