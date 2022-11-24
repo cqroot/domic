@@ -6,7 +6,7 @@ import (
 	"github.com/cqroot/dotm/pkg/config"
 )
 
-func LinkAll(dot *config.Dot) (bool, error) {
+func Link(dot *config.Dot) (bool, error) {
 	state, _ := CheckState(dot)
 
 	switch state {
@@ -22,7 +22,7 @@ func LinkAll(dot *config.Dot) (bool, error) {
 	return false, nil
 }
 
-func UnlinkAll(dot *config.Dot) (bool, error) {
+func Unlink(dot *config.Dot) (bool, error) {
 	state, _ := CheckState(dot)
 
 	switch state {

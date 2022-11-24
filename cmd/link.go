@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
@@ -20,23 +22,46 @@ var linkCmd = &cobra.Command{
 }
 
 func RunLinkCmd(cmd *cobra.Command, args []string) {
+	LinkOrUnlink(true)
+}
+
+func LinkOrUnlink(link bool) {
 	cfg, err := readConfig()
 	cobra.CheckErr(err)
 
 	t := newTable()
 
 	t.AppendHeader(table.Row{"#", "Source Path", "Target Path", "Status"})
+	doNothing := true
 	for idx, dot := range cfg.Dots {
-		hasOp, err := dotfile.LinkAll(&dot)
+		var hasOp bool
+		var err error
+
+		if link {
+			hasOp, err = dotfile.Link(&dot)
+		} else {
+			hasOp, err = dotfile.Unlink(&dot)
+		}
 		if err != nil {
+			doNothing = false
 			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgRed.Sprint(err.Error())})
 			continue
 		}
 
 		if hasOp {
-			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgGreen.Sprint("Linked!")})
+			doNothing = false
+			if link {
+				t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgGreen.Sprint("Linked!")})
+			} else {
+				t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgGreen.Sprint("Unlinked!")})
+			}
+			continue
 		}
 	}
 
-	t.Render()
+	if doNothing {
+		fmt.Println("There are no dotfiles to process here.")
+	} else {
+		t.Render()
+	}
 }
