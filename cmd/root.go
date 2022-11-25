@@ -53,7 +53,7 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 func newTable() table.Writer {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.SetStyle(table.StyleLight)
+	t.SetStyle(table.StyleRounded)
 	t.Style().Format.Header = text.FormatDefault
 
 	return t
