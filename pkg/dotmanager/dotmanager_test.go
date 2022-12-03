@@ -1,4 +1,4 @@
-package config_test
+package dotmanager_test
 
 import (
 	"path"
@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/cqroot/dotm/internal/config"
 	"github.com/cqroot/dotm/pkg/common"
+	"github.com/cqroot/dotm/pkg/dotmanager"
 )
 
 func checkErr(t *testing.T, err error) {
@@ -17,19 +17,19 @@ func checkErr(t *testing.T, err error) {
 	}
 }
 
-func TestConfigRead(t *testing.T) {
-	cfg, err := config.New("../../testdata", "../../testdata/dotm.toml")
-	checkErr(t, err)
-
+func TestDotsWithTag(t *testing.T) {
 	baseDir, err := filepath.Abs("../../testdata")
 	checkErr(t, err)
 
 	configDir, err := common.DotDir("config")
 	checkErr(t, err)
-	homeDir, err := common.DotDir("home")
+
+	dm, err := dotmanager.New("../../testdata", "../../testdata/dotm.toml")
 	checkErr(t, err)
 
-	expectedDots := []config.Dot{
+	dots := dm.DotsWithTag("term")
+
+	expectedDots := []dotmanager.Dot{
 		{
 			Name:         "tmux",
 			Source:       path.Join(baseDir, "tmux"),
@@ -38,15 +38,8 @@ func TestConfigRead(t *testing.T) {
 			TargetType:   "config",
 			Exec:         "tmux",
 			Tags:         []string{"term"},
-		}, {
-			Name:         "vimrc",
-			Source:       path.Join(baseDir, "vim/vimrc"),
-			RelativePath: "vim/vimrc",
-			Target:       path.Join(homeDir, ".vimrc"),
-			TargetType:   "home",
-			Exec:         "vim",
 		},
 	}
 
-	assert.Equal(t, expectedDots, cfg.Dots)
+	assert.Equal(t, expectedDots, dots)
 }

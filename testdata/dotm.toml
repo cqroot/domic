@@ -1,5 +1,6 @@
 [tmux]
 exec = "tmux"
+tags = ["term"]
 
 [vim]
 relative_path = "vim/vimrc"
