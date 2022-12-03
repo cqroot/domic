@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/cqroot/dotm/pkg/common"
-	"github.com/cqroot/dotm/pkg/config"
+	"github.com/cqroot/dotm/internal/config"
 )
 
 func checkErr(t *testing.T, err error) {

@@ -2,11 +2,9 @@ package dotfile
 
 import (
 	"os"
-
-	"github.com/cqroot/dotm/pkg/config"
 )
 
-func Link(dot *config.Dot) (bool, error) {
+func Link(dot *Dot) (bool, error) {
 	state, _ := CheckState(dot)
 
 	switch state {
@@ -22,7 +20,7 @@ func Link(dot *config.Dot) (bool, error) {
 	return false, nil
 }
 
-func Unlink(dot *config.Dot) (bool, error) {
+func Unlink(dot *Dot) (bool, error) {
 	state, _ := CheckState(dot)
 
 	switch state {

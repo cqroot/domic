@@ -8,11 +8,12 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/dotm/pkg/config"
 	"github.com/cqroot/dotm/pkg/dotfile"
+	"github.com/cqroot/dotm/pkg/dotmanager"
 )
 
 var (
+	Tag     string
 	rootCmd = &cobra.Command{
 		Use:   "dm",
 		Short: "DotM - Manage dotfiles more easily.",
@@ -21,19 +22,20 @@ var (
 	}
 )
 
+func init() {
+	rootCmd.PersistentFlags().StringVarP(&Tag, "tag", "t", "", "use dotfiles with specified tags")
+}
+
 func Execute() {
 	err := rootCmd.Execute()
 	cobra.CheckErr(err)
 }
 
 func runRootCmd(cmd *cobra.Command, args []string) {
-	cfg, err := readConfig()
-	cobra.CheckErr(err)
-
 	t := newTable()
 
 	t.AppendHeader(table.Row{"#", "Source Path", "Target Path", "Status"})
-	for idx, dot := range cfg.Dots {
+	for idx, dot := range dots() {
 		state, descr := dotfile.CheckState(&dot)
 		switch state {
 		case dotfile.StateIgnored:
@@ -68,8 +70,12 @@ func getBaseDir() (string, error) {
 	return path.Join(configDir, "dotfiles"), nil
 }
 
-func readConfig() (*config.Config, error) {
+func dots() []dotmanager.Dot {
 	baseDir, err := getBaseDir()
 	cobra.CheckErr(err)
-	return config.New(baseDir, path.Join(baseDir, "dotm.toml"))
+
+	dm, err := dotmanager.New(baseDir, path.Join(baseDir, "dotm.toml"))
+	cobra.CheckErr(err)
+
+	return dm.DotsWithTag(Tag)
 }

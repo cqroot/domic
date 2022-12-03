@@ -23,6 +23,7 @@ type Dot struct {
 	TargetType string `toml:"target_type"`
 
 	Exec string
+	Tags []string
 }
 
 type Config struct {

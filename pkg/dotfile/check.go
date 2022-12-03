@@ -4,10 +4,9 @@ import (
 	"os"
 
 	"github.com/cqroot/dotm/pkg/common"
-	"github.com/cqroot/dotm/pkg/config"
 )
 
-func CheckState(dot *config.Dot) (State, string) {
+func CheckState(dot *Dot) (State, string) {
 	if dot.Exec != "" && !common.CommandExists(dot.Exec) {
 		return StateIgnored, "Ignored"
 	}

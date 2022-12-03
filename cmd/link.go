@@ -26,14 +26,11 @@ func RunLinkCmd(cmd *cobra.Command, args []string) {
 }
 
 func LinkOrUnlink(link bool) {
-	cfg, err := readConfig()
-	cobra.CheckErr(err)
-
 	t := newTable()
 
 	t.AppendHeader(table.Row{"#", "Source Path", "Target Path", "Status"})
 	doNothing := true
-	for idx, dot := range cfg.Dots {
+	for idx, dot := range dots() {
 		var hasOp bool
 		var err error
 
