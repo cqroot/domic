@@ -20,7 +20,8 @@ type Dot struct {
 	RelativePath string `toml:"relative_path"`
 
 	// config: ~/.config/xxx or home: ~/.xxx
-	TargetType string `toml:"target_type"`
+	TargetType         string `toml:"target_type"`
+	TargetRelativePath string `toml:"target_relative_path"`
 
 	Exec string
 	Tags []string
@@ -86,9 +87,17 @@ func (c *Config) Read() error {
 			}
 			switch dot.TargetType {
 			case "config":
-				dot.Target = filepath.Join(dir, dot.Name)
+				if dot.TargetRelativePath != "" {
+					dot.Target = filepath.Join(dir, dot.TargetRelativePath)
+				} else {
+					dot.Target = filepath.Join(dir, dot.Name)
+				}
 			case "home":
-				dot.Target = filepath.Join(dir, fmt.Sprintf(".%s", dot.Name))
+				if dot.TargetRelativePath != "" {
+					dot.Target = filepath.Join(dir, dot.TargetRelativePath)
+				} else {
+					dot.Target = filepath.Join(dir, fmt.Sprintf(".%s", dot.Name))
+				}
 			}
 		}
 
