@@ -15,6 +15,7 @@ type Dot struct {
 	Name   string // The name of the file or folder itself
 	Source string // Absolute path to source file
 	Target string // Absolute path to target file
+	Type   string // symlink_one (default) / symlink_each
 
 	// Relative path to source file
 	RelativePath string `toml:"relative_path"`
@@ -73,6 +74,10 @@ func (c *Config) Read() error {
 		}
 		dot.Name = path.Base(dot.RelativePath)
 		dot.Source = path.Join(c.BasePath, dot.RelativePath)
+
+		if dot.Type != "symlink_each" {
+			dot.Type = "symlink_one"
+		}
 
 		// If user does not specify a target, the target will be generated
 		// according to the type.

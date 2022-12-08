@@ -9,6 +9,7 @@ type State int
 const (
 	StateIgnored State = iota
 	StateExisted
+    StateError
 
 	StateLinkNormal
 	StateLinkEmpty

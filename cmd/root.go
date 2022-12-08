@@ -40,11 +40,9 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		switch state {
 		case dotfile.StateIgnored:
 			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, descr})
-		case dotfile.StateExisted:
-			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgRed.Sprint(descr)})
 		case dotfile.StateLinkNormal:
 			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgGreen.Sprint(descr)})
-		case dotfile.StateLinkEmpty:
+		default:
 			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgRed.Sprint(descr)})
 		}
 	}
@@ -74,8 +72,8 @@ func dots() []dotmanager.Dot {
 	baseDir, err := getBaseDir()
 	cobra.CheckErr(err)
 
-	dm, err := dotmanager.New(baseDir, path.Join(baseDir, "dotm.toml"))
+	dm, err := dotmanager.New(baseDir, path.Join(baseDir, "dotm.toml"), Tag)
 	cobra.CheckErr(err)
 
-	return dm.DotsWithTag(Tag)
+	return dm.Dots()
 }

@@ -24,10 +24,10 @@ func TestDotsWithTag(t *testing.T) {
 	configDir, err := common.DotDir("config")
 	checkErr(t, err)
 
-	dm, err := dotmanager.New("../../testdata", "../../testdata/dotm.toml")
+	dm, err := dotmanager.New("../../testdata", "../../testdata/dotm.toml", "term")
 	checkErr(t, err)
 
-	dots := dm.DotsWithTag("term")
+	dots := dm.Dots()
 
 	expectedDots := []dotmanager.Dot{
 		{
@@ -38,6 +38,7 @@ func TestDotsWithTag(t *testing.T) {
 			TargetType:   "config",
 			Exec:         "tmux",
 			Tags:         []string{"term"},
+			Type:         "symlink_one",
 		},
 	}
 

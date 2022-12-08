@@ -38,6 +38,7 @@ func TestConfigRead(t *testing.T) {
 			TargetType:   "config",
 			Exec:         "tmux",
 			Tags:         []string{"term"},
+			Type:         "symlink_one",
 		}, {
 			Name:         "vimrc",
 			Source:       path.Join(baseDir, "vim/vimrc"),
@@ -45,6 +46,7 @@ func TestConfigRead(t *testing.T) {
 			Target:       path.Join(homeDir, ".vimrc"),
 			TargetType:   "home",
 			Exec:         "vim",
+			Type:         "symlink_one",
 		},
 	}
 
