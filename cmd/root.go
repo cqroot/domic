@@ -86,13 +86,3 @@ func getBaseDir() (string, error) {
 
 	return path.Join(configDir, "dotfiles"), nil
 }
-
-func dots() []dotmanager.Dot {
-	baseDir, err := getBaseDir()
-	cobra.CheckErr(err)
-
-	dm, err := dotmanager.New(baseDir, path.Join(baseDir, "dotm.toml"), Tag)
-	cobra.CheckErr(err)
-
-	return dm.Dots()
-}
