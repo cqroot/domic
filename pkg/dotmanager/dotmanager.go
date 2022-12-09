@@ -8,7 +8,6 @@ type Dot = config.Dot
 
 type DotManager struct {
 	dots []Dot
-	tag  string
 }
 
 func New(basePath string, configPath string, tag string) (*DotManager, error) {
@@ -17,9 +16,23 @@ func New(basePath string, configPath string, tag string) (*DotManager, error) {
 		return nil, err
 	}
 
+	var dots []Dot
+
+	if tag == "" {
+		dots = cfg.Dots
+	} else {
+		dots = make([]Dot, 0)
+
+		for _, dot := range cfg.Dots {
+			if containsTag(tag, dot.Tags) {
+				dots = append(dots, dot)
+				continue
+			}
+		}
+	}
+
 	return &DotManager{
-		dots: cfg.Dots,
-		tag:  tag,
+		dots: dots,
 	}, nil
 }
 
@@ -32,19 +45,6 @@ func containsTag(tag string, tags []string) bool {
 	return false
 }
 
-func (d *DotManager) Dots() []Dot {
-	if d.tag == "" {
-		return d.dots
-	}
-
-	result := make([]Dot, 0)
-
-	for _, dot := range d.dots {
-		if containsTag(d.tag, dot.Tags) {
-			result = append(result, dot)
-			continue
-		}
-	}
-
-	return result
+func (d DotManager) Dots() []Dot {
+	return d.dots
 }

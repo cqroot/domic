@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"path"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/dotm/pkg/dotfile"
+	"github.com/cqroot/dotm/pkg/dotmanager"
 )
 
 func init() {
@@ -26,31 +27,52 @@ func RunLinkCmd(cmd *cobra.Command, args []string) {
 }
 
 func LinkOrUnlink(link bool) {
+	baseDir, err := getBaseDir()
+	cobra.CheckErr(err)
+
+	dm, err := dotmanager.New(baseDir, path.Join(baseDir, "dotm.toml"), Tag)
+	cobra.CheckErr(err)
+
 	t := newTable()
+	t.AppendHeader(table.Row{
+		"#", "Type", "Source Path", "Target Path", "Status",
+	})
 
-	t.AppendHeader(table.Row{"#", "Source Path", "Target Path", "Status"})
 	doNothing := true
-	for idx, dot := range dots() {
-		var hasOp bool
-		var err error
 
-		if link {
-			hasOp, err = dotfile.Link(&dot)
-		} else {
-			hasOp, err = dotfile.Unlink(&dot)
-		}
-		if err != nil {
+	var results []dotmanager.ExecuteResult
+
+	if link {
+		results = dm.Apply()
+	} else {
+		results = dm.Revoke()
+	}
+
+	for idx, result := range results {
+		if result.Err != nil {
 			doNothing = false
-			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgRed.Sprint(err.Error())})
+			t.AppendRow([]interface{}{
+				idx, result.Dot.Type,
+				result.Dot.Source, result.Dot.Target,
+				text.FgRed.Sprint(result.Err.Error()),
+			})
 			continue
 		}
 
-		if hasOp {
+		if result.HasOp {
 			doNothing = false
 			if link {
-				t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgGreen.Sprint("Linked!")})
+				t.AppendRow([]interface{}{
+					idx, result.Dot.Type,
+					result.Dot.Source, result.Dot.Target,
+					text.FgGreen.Sprint("Linked!"),
+				})
 			} else {
-				t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgGreen.Sprint("Unlinked!")})
+				t.AppendRow([]interface{}{
+					idx, result.Dot.Type,
+					result.Dot.Source, result.Dot.Target,
+					text.FgGreen.Sprint("Unlinked!"),
+				})
 			}
 			continue
 		}

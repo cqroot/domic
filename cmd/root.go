@@ -8,7 +8,6 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/dotm/pkg/dotfile"
 	"github.com/cqroot/dotm/pkg/dotmanager"
 )
 
@@ -23,7 +22,8 @@ var (
 )
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&Tag, "tag", "t", "", "use dotfiles with specified tags")
+	rootCmd.PersistentFlags().StringVarP(
+		&Tag, "tag", "t", "", "use dotfiles with specified tags")
 }
 
 func Execute() {
@@ -32,18 +32,37 @@ func Execute() {
 }
 
 func runRootCmd(cmd *cobra.Command, args []string) {
-	t := newTable()
+	baseDir, err := getBaseDir()
+	cobra.CheckErr(err)
 
-	t.AppendHeader(table.Row{"#", "Source Path", "Target Path", "Status"})
-	for idx, dot := range dots() {
-		state, descr := dotfile.CheckState(&dot)
-		switch state {
-		case dotfile.StateIgnored:
-			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, descr})
-		case dotfile.StateLinkNormal:
-			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgGreen.Sprint(descr)})
+	dm, err := dotmanager.New(baseDir, path.Join(baseDir, "dotm.toml"), Tag)
+	cobra.CheckErr(err)
+
+	t := newTable()
+	t.AppendHeader(table.Row{
+		"#", "Type", "Source Path", "Target Path", "Status",
+	})
+
+	for idx, result := range dm.Check() {
+		switch result.Level {
+		case dotmanager.Ignored:
+			t.AppendRow([]interface{}{
+				idx, result.Dot.Type,
+				result.Dot.Source, result.Dot.Target,
+				result.Description,
+			})
+		case dotmanager.Info:
+			t.AppendRow([]interface{}{
+				idx, result.Dot.Type,
+				result.Dot.Source, result.Dot.Target,
+				text.FgGreen.Sprint(result.Description),
+			})
 		default:
-			t.AppendRow([]interface{}{idx, dot.Source, dot.Target, text.FgRed.Sprint(descr)})
+			t.AppendRow([]interface{}{
+				idx, result.Dot.Type,
+				result.Dot.Source, result.Dot.Target,
+				text.FgRed.Sprint(result.Description),
+			})
 		}
 	}
 
