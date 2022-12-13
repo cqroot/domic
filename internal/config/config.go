@@ -5,13 +5,12 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"sort"
 
 	"github.com/cqroot/dotm/pkg/common"
 	"github.com/pelletier/go-toml/v2"
 )
 
-type Dot struct {
+type DotItem struct {
 	Name   string // The name of the file or folder itself
 	Source string // Absolute path to source file
 	Target string // Absolute path to target file
@@ -31,7 +30,7 @@ type Dot struct {
 type Config struct {
 	BasePath   string
 	ConfigPath string
-	Dots       []Dot
+	DotItems   []DotItem
 }
 
 func New(basePath string, configPath string) (*Config, error) {
@@ -62,7 +61,7 @@ func (c *Config) Read() error {
 		return err
 	}
 
-	var cfg map[string]Dot
+	var cfg map[string]DotItem
 	err = toml.Unmarshal(data, &cfg)
 	if err != nil {
 		return err
@@ -106,16 +105,16 @@ func (c *Config) Read() error {
 			}
 		}
 
-		c.Dots = append(c.Dots, dot)
+		c.DotItems = append(c.DotItems, dot)
 	}
 
 	// Sort slice to ensure that the order of each output result is the same
-	sort.Slice(c.Dots, func(i, j int) bool {
-		if c.Dots[i].TargetType != c.Dots[j].TargetType {
-			return c.Dots[i].TargetType < c.Dots[j].TargetType
-		}
-		return c.Dots[i].Name < c.Dots[j].Name
-	})
+	// sort.Slice(c.Dots, func(i, j int) bool {
+	//     if c.Dots[i].TargetType != c.Dots[j].TargetType {
+	//         return c.Dots[i].TargetType < c.Dots[j].TargetType
+	//     }
+	//     return c.Dots[i].Name < c.Dots[j].Name
+	// })
 
 	return nil
 }

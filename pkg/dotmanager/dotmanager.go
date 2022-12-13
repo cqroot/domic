@@ -4,10 +4,8 @@ import (
 	"github.com/cqroot/dotm/internal/config"
 )
 
-type Dot = config.Dot
-
 type DotManager struct {
-	dots []Dot
+	Dots []Dot
 }
 
 func New(basePath string, configPath string, tag string) (*DotManager, error) {
@@ -16,23 +14,24 @@ func New(basePath string, configPath string, tag string) (*DotManager, error) {
 		return nil, err
 	}
 
-	var dots []Dot
+    // var dots []Dot
+    dots := make([]Dot, 0)
 
-	if tag == "" {
-		dots = cfg.Dots
-	} else {
-		dots = make([]Dot, 0)
-
-		for _, dot := range cfg.Dots {
-			if containsTag(tag, dot.Tags) {
-				dots = append(dots, dot)
-				continue
-			}
+	for _, item := range cfg.DotItems {
+		if tag != "" && !containsTag(tag, item.Tags) {
+			continue
 		}
+
+        dot := GetDot(item)
+        if dot == nil {
+            continue
+        }
+
+		dots = append(dots, dot)
 	}
 
 	return &DotManager{
-		dots: dots,
+		Dots: dots,
 	}, nil
 }
 
@@ -43,8 +42,4 @@ func containsTag(tag string, tags []string) bool {
 		}
 	}
 	return false
-}
-
-func (d DotManager) Dots() []Dot {
-	return d.dots
 }

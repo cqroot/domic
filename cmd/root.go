@@ -43,25 +43,18 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		"#", "Type", "Source Path", "Target Path", "Status",
 	})
 
-	for idx, result := range dm.Check() {
-		switch result.Level {
-		case dotmanager.Ignored:
+	for idx, dot := range dm.Dots {
+		err := dot.Check()
+
+		switch err {
+		case nil:
 			t.AppendRow([]interface{}{
-				idx, result.Dot.Type,
-				result.Dot.Source, result.Dot.Target,
-				result.Description,
-			})
-		case dotmanager.Info:
-			t.AppendRow([]interface{}{
-				idx, result.Dot.Type,
-				result.Dot.Source, result.Dot.Target,
-				text.FgGreen.Sprint(result.Description),
+				idx, dot.Type(), dot.Source(), dot.Target(), text.FgGreen.Sprint("OK"),
 			})
 		default:
 			t.AppendRow([]interface{}{
-				idx, result.Dot.Type,
-				result.Dot.Source, result.Dot.Target,
-				text.FgRed.Sprint(result.Description),
+				idx, dot.Type(), dot.Source(), dot.Target(),
+				text.FgRed.Sprintf("ERROR: %s", err.Error()),
 			})
 		}
 	}

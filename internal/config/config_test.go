@@ -29,7 +29,7 @@ func TestConfigRead(t *testing.T) {
 	homeDir, err := common.DotDir("home")
 	checkErr(t, err)
 
-	expectedDots := []config.Dot{
+	expectedDots := []config.DotItem{
 		{
 			Name:         "tmux",
 			Source:       path.Join(baseDir, "tmux"),
@@ -50,5 +50,5 @@ func TestConfigRead(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, expectedDots, cfg.Dots)
+	assert.Equal(t, expectedDots, cfg.DotItems)
 }
