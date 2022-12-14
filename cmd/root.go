@@ -13,6 +13,7 @@ import (
 
 var (
 	Tag     string
+	Verbose bool
 	rootCmd = &cobra.Command{
 		Use:   "dm",
 		Short: "DotM - Manage dotfiles more easily.",
@@ -24,6 +25,8 @@ var (
 func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&Tag, "tag", "t", "", "use dotfiles with specified tags")
+	rootCmd.PersistentFlags().BoolVarP(
+		&Verbose, "verbose", "v", false, "")
 }
 
 func Execute() {
@@ -39,22 +42,34 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 	cobra.CheckErr(err)
 
 	t := newTable()
-	t.AppendHeader(table.Row{
-		"#", "Type", "Source Path", "Target Path", "Status",
-	})
+	if Verbose {
+		t.AppendHeader(table.Row{
+			"#", "Name", "Type", "Source Path", "Target Path", "Status",
+		})
+	} else {
+		t.AppendHeader(table.Row{
+			"#", "Name", "Type", "Status",
+		})
+	}
 
 	for idx, dot := range dm.Dots {
 		err := dot.Check()
+		msg := ""
 
 		switch err {
 		case nil:
-			t.AppendRow([]interface{}{
-				idx, dot.Type(), dot.Source(), dot.Target(), text.FgGreen.Sprint("OK"),
-			})
+			msg = text.FgGreen.Sprint("OK")
 		default:
+			msg = text.FgRed.Sprintf("ERROR: %s", err.Error())
+		}
+
+		if Verbose {
 			t.AppendRow([]interface{}{
-				idx, dot.Type(), dot.Source(), dot.Target(),
-				text.FgRed.Sprintf("ERROR: %s", err.Error()),
+				idx, dot.Name(), dot.Type(), dot.Source(), dot.Target(), msg,
+			})
+		} else {
+			t.AppendRow([]interface{}{
+				idx, dot.Name(), dot.Type(), msg,
 			})
 		}
 	}

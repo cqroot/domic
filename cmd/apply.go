@@ -34,9 +34,15 @@ func ApplyOrRevoke(apply bool) {
 	cobra.CheckErr(err)
 
 	t := newTable()
-	t.AppendHeader(table.Row{
-		"#", "Type", "Source Path", "Target Path", "Status",
-	})
+	if Verbose {
+		t.AppendHeader(table.Row{
+			"#", "Name", "Type", "Source Path", "Target Path", "Status",
+		})
+	} else {
+		t.AppendHeader(table.Row{
+			"#", "Name", "Type", "Status",
+		})
+	}
 
 	doNothing := true
 
@@ -47,19 +53,25 @@ func ApplyOrRevoke(apply bool) {
 			err = dot.Revoke()
 		}
 
+		msg := ""
+
 		switch err {
 		case nil:
-			doNothing = false
-			t.AppendRow([]interface{}{
-				idx, dot.Type(), dot.Source(), dot.Target(),
-				text.FgGreen.Sprint("OK"),
-			})
+			msg = text.FgGreen.Sprint("OK")
 		case dotmanager.DotIgnoreError:
+			continue
 		default:
-			doNothing = false
+			msg = text.FgRed.Sprint(err.Error())
+		}
+
+		doNothing = false
+		if Verbose {
 			t.AppendRow([]interface{}{
-				idx, dot.Type(), dot.Source(), dot.Target(),
-				text.FgRed.Sprint(err.Error()),
+				idx, dot.Name(), dot.Type(), dot.Source(), dot.Target(), msg,
+			})
+		} else {
+			t.AppendRow([]interface{}{
+				idx, dot.Name(), dot.Type(), msg,
 			})
 		}
 	}

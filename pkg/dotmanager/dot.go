@@ -5,6 +5,7 @@ import (
 )
 
 type Dot interface {
+	Name() string
 	Source() string
 	Target() string
 	Type() string
@@ -17,6 +18,7 @@ type Dot interface {
 
 func GetDot(dotItem config.DotItem) Dot {
 	cd := &commonDot{
+		name:    dotItem.Name,
 		source:  dotItem.Source,
 		target:  dotItem.Target,
 		exec:    dotItem.Exec,

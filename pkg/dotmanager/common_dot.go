@@ -3,10 +3,15 @@ package dotmanager
 import "github.com/cqroot/dotm/pkg/common"
 
 type commonDot struct {
+	name    string
 	source  string
 	target  string
 	exec    string
 	dotType string
+}
+
+func (dc commonDot) Name() string {
+	return dc.name
 }
 
 func (dc commonDot) Source() string {
@@ -18,7 +23,7 @@ func (dc commonDot) Target() string {
 }
 
 func (dc commonDot) Exec() string {
-    return dc.exec
+	return dc.exec
 }
 
 func (dc commonDot) Type() string {
