@@ -6,31 +6,24 @@ import (
 )
 
 type SymlinkOneDot struct {
-	source string
-	target string
-
-	*dotCommon
-}
-
-func (d SymlinkOneDot) Source() string {
-	return d.source
-}
-
-func (d SymlinkOneDot) Target() string {
-	return d.target
+	*commonDot
 }
 
 func (d SymlinkOneDot) Check() error {
-	if err := d.CheckExec(); err != nil {
+	return checkDotSymlinkOne(d.exec, d.Source(), d.Target())
+}
+
+func checkDotSymlinkOne(exec, source, target string) error {
+	if err := checkExec(exec); err != nil {
 		return err
 	}
 
-	destination, err := os.Readlink(d.target)
+	destination, err := os.Readlink(target)
 	if err != nil {
 		return errors.New("not linked")
 	}
 
-	if destination == d.source {
+	if destination == source {
 		return nil
 	} else {
 		return errors.New("target file already exists")
@@ -38,21 +31,31 @@ func (d SymlinkOneDot) Check() error {
 }
 
 func (d SymlinkOneDot) Apply() error {
-	err := d.Check()
+	return applyDotSymlinkOne(d.Exec(), d.Source(), d.Target())
+}
+
+func applyDotSymlinkOne(exec, source, target string) error {
+	err := checkDotSymlinkOne(exec, source, target)
 
 	if err == nil || errors.Is(err, DotIgnoreError) {
 		return DotIgnoreError
 	}
 
-	return os.Symlink(d.source, d.target)
+	return os.Symlink(source, target)
 }
 
 func (d SymlinkOneDot) Revoke() error {
-	err := d.Check()
+	return revokeDotSymlinkOne(d.Exec(), d.Source(), d.Target())
+}
+
+func revokeDotSymlinkOne(exec, source, target string) error {
+	err := checkDotSymlinkOne(exec, source, target)
 
 	if errors.Is(err, DotIgnoreError) {
 		return DotIgnoreError
+	} else if err != nil {
+		return err
 	}
 
-	return os.Remove(d.target)
+	return os.Remove(target)
 }

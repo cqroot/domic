@@ -2,7 +2,6 @@ package dotmanager
 
 import (
 	"github.com/cqroot/dotm/internal/config"
-	"github.com/cqroot/dotm/pkg/common"
 )
 
 type Dot interface {
@@ -16,25 +15,10 @@ type Dot interface {
 	Revoke() error
 }
 
-type dotCommon struct {
-	exec    string
-	dotType string
-}
-
-func (dc dotCommon) Type() string {
-	return dc.dotType
-}
-
-func (dc dotCommon) CheckExec() error {
-	if dc.exec != "" && !common.CommandExists(dc.exec) {
-		return DotIgnoreError
-	}
-
-	return nil
-}
-
 func GetDot(dotItem config.DotItem) Dot {
-	dc := &dotCommon{
+	cd := &commonDot{
+		source:  dotItem.Source,
+		target:  dotItem.Target,
 		exec:    dotItem.Exec,
 		dotType: dotItem.Type,
 	}
@@ -42,13 +26,12 @@ func GetDot(dotItem config.DotItem) Dot {
 	switch dotItem.Type {
 	case "symlink_one":
 		return SymlinkOneDot{
-			source: dotItem.Source,
-			target: dotItem.Target,
-
-			dotCommon: dc,
+			commonDot: cd,
 		}
 	case "symlink_each":
-		return nil
+		return SymlinkEachDot{
+			commonDot: cd,
+		}
 	}
 
 	return nil
