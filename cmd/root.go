@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 	"path"
+	"sync"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -52,28 +53,48 @@ func runRootCmd(cmd *cobra.Command, args []string) {
 		})
 	}
 
+	var wg sync.WaitGroup
+	rowChan := make(chan table.Row)
+
 	for idx, dot := range dm.Dots {
-		err := dot.Check()
-		msg := ""
+		wg.Add(1)
 
-		switch err {
-		case nil:
-			msg = text.FgGreen.Sprint("OK")
-		default:
-			msg = text.FgRed.Sprintf("ERROR: %s", err.Error())
-		}
+		go func(idx int, dot dotmanager.Dot) {
+			err := dot.Check()
+			msg := ""
 
-		if Verbose {
-			t.AppendRow([]interface{}{
-				idx, dot.Name(), dot.Type(), dot.Source(), dot.Target(), msg,
-			})
-		} else {
-			t.AppendRow([]interface{}{
-				idx, dot.Name(), dot.Type(), msg,
-			})
-		}
+			switch err {
+			case nil:
+				msg = text.FgGreen.Sprint("OK")
+			default:
+				msg = text.FgRed.Sprintf("ERROR: %s", err.Error())
+			}
+
+			if Verbose {
+				rowChan <- []interface{}{
+					idx, dot.Name(), dot.Type(), dot.Source(), dot.Target(), msg,
+				}
+			} else {
+				rowChan <- []interface{}{
+					idx, dot.Name(), dot.Type(), msg,
+				}
+			}
+		}(idx, dot)
 	}
 
+	rows := make([]table.Row, 0)
+
+	go func() {
+		for row := range rowChan {
+			rows = append(rows, row)
+			wg.Done()
+		}
+	}()
+
+	wg.Wait()
+	close(rowChan)
+
+	t.AppendRows(rows)
 	t.Render()
 }
 

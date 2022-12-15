@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"path"
+	"sync"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -44,41 +45,61 @@ func ApplyOrRevoke(apply bool) {
 		})
 	}
 
-	doNothing := true
+	var wg sync.WaitGroup
+	rowChan := make(chan table.Row)
 
 	for idx, dot := range dm.Dots {
-		if apply {
-			err = dot.Apply()
-		} else {
-			err = dot.Revoke()
-		}
+		wg.Add(1)
 
-		msg := ""
+		go func(idx int, dot dotmanager.Dot) {
+			if apply {
+				err = dot.Apply()
+			} else {
+				err = dot.Revoke()
+			}
 
-		switch err {
-		case nil:
-			msg = text.FgGreen.Sprint("OK")
-		case dotmanager.DotIgnoreError:
-			continue
-		default:
-			msg = text.FgRed.Sprint(err.Error())
-		}
+			msg := ""
 
-		doNothing = false
-		if Verbose {
-			t.AppendRow([]interface{}{
-				idx, dot.Name(), dot.Type(), dot.Source(), dot.Target(), msg,
-			})
-		} else {
-			t.AppendRow([]interface{}{
-				idx, dot.Name(), dot.Type(), msg,
-			})
-		}
+			switch err {
+			case nil:
+				msg = text.FgGreen.Sprint("OK")
+			case dotmanager.DotIgnoreError:
+				rowChan <- nil
+				return
+			default:
+				msg = text.FgRed.Sprint(err.Error())
+			}
+
+			if Verbose {
+				rowChan <- []interface{}{
+					idx, dot.Name(), dot.Type(), dot.Source(), dot.Target(), msg,
+				}
+			} else {
+				rowChan <- []interface{}{
+					idx, dot.Name(), dot.Type(), msg,
+				}
+			}
+		}(idx, dot)
 	}
 
-	if doNothing {
+	rows := make([]table.Row, 0)
+
+	go func() {
+		for row := range rowChan {
+			if row != nil {
+				rows = append(rows, row)
+			}
+			wg.Done()
+		}
+	}()
+
+	wg.Wait()
+	close(rowChan)
+
+	if len(rows) == 0 {
 		fmt.Println("There are no dotfiles to process here.")
 	} else {
+		t.AppendRows(rows)
 		t.Render()
 	}
 }
