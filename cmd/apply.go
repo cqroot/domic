@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/cqroot/gmdots/internal/configs"
+	"github.com/cqroot/gmdots/configs"
 	"github.com/cqroot/gmdots/internal/dot"
 	"github.com/spf13/cobra"
 )
