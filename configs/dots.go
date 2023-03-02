@@ -31,6 +31,19 @@ func DefaultDotConfigs() (map[string]dot.DotConfig, error) {
 	}
 
 	return map[string]dot.DotConfig{
+		// go env GOENV
+		"go": {
+			Src: "go",
+			Dest: func() string {
+				if runtime.GOOS == "linux" {
+					return xdgConfigPath("go")
+				} else if runtime.GOOS == "windows" {
+					return appDataPath("go")
+				}
+				return "-"
+			}(),
+		},
+
 		// https://neovim.io/doc/user/starting.html#standard-path
 		"nvim": {
 			Src: "nvim",
