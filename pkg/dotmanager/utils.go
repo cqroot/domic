@@ -1,4 +1,4 @@
-package dot
+package dotmanager
 
 import (
 	"os"
@@ -6,11 +6,6 @@ import (
 
 	"github.com/adrg/xdg"
 )
-
-type DotConfig struct {
-	Src  string
-	Dest string
-}
 
 func BaseDir() string {
 	return filepath.Join(xdg.DataHome, "gmdots")
@@ -20,7 +15,7 @@ func DotsDir() string {
 	return filepath.Join(BaseDir(), "dots")
 }
 
-func Dots() ([]string, error) {
+func DotNames() ([]string, error) {
 	files, err := os.ReadDir(DotsDir())
 	if err != nil {
 		return nil, err
@@ -35,4 +30,26 @@ func Dots() ([]string, error) {
 	}
 
 	return dots, nil
+}
+
+func (m DotManager) Range(handleFunc func(name string, dot Dot)) error {
+	names, err := DotNames()
+	if err != nil {
+		return err
+	}
+
+	for _, name := range names {
+		dotfile, ok := m.dotMap[name]
+		if !ok {
+			continue
+		}
+
+		if dotfile.Dest == "-" {
+			continue
+		}
+
+		handleFunc(name, dotfile)
+	}
+
+	return nil
 }

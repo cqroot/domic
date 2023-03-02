@@ -2,10 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"path/filepath"
 
-	"github.com/cqroot/gmdots/configs"
-	"github.com/cqroot/gmdots/internal/dot"
+	"github.com/cqroot/gmdots/pkg/dotmanager"
 	"github.com/spf13/cobra"
 )
 
@@ -21,13 +19,13 @@ var applyCmd = &cobra.Command{
 }
 
 func runApplyCmd(cmd *cobra.Command, args []string) {
-	err := configs.RangeDotConfigs(func(dotName string, dotConfig dot.DotConfig) {
-		err := configs.Apply(
-			filepath.Join(dot.DotsDir(), dotConfig.Src),
-			dotConfig.Dest,
-		)
+	dm, err := dotmanager.Default()
+	cobra.CheckErr(err)
+
+	err = dm.Range(func(name string, dot dotmanager.Dot) {
+		err := dm.Apply(name)
 		if err != nil {
-			fmt.Print(dotName, ": ")
+			fmt.Print(name, ": ")
 			cobra.CheckErr(err)
 		}
 	})

@@ -2,13 +2,11 @@ package cmd
 
 import (
 	"os"
-	"path/filepath"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/gmdots/configs"
-	"github.com/cqroot/gmdots/internal/dot"
+	"github.com/cqroot/gmdots/pkg/dotmanager"
 )
 
 var rootCmd = &cobra.Command{
@@ -24,17 +22,18 @@ func printStatus() {
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Dot", "Src", "Dest", "Status"})
 
-	err := configs.RangeDotConfigs(func(dotName string, dotConfig dot.DotConfig) {
-		ok, err := configs.Check(
-			filepath.Join(dot.DotsDir(), dotConfig.Src),
-			dotConfig.Dest,
-		)
+	dm, err := dotmanager.Default()
+	cobra.CheckErr(err)
+
+	err = dm.Range(func(name string, dot dotmanager.Dot) {
+		ok, err := dm.Check(name)
+
 		if ok {
-			t.AppendRow(table.Row{dotName, dotConfig.Src, dotConfig.Dest, "OK"})
+			t.AppendRow(table.Row{name, dot.Src, dot.Dest, "OK"})
 		} else if err != nil {
-			t.AppendRow(table.Row{dotName, dotConfig.Src, dotConfig.Dest, err.Error()})
+			t.AppendRow(table.Row{name, dot.Src, dot.Dest, err.Error()})
 		} else {
-			t.AppendRow(table.Row{dotName, dotConfig.Src, dotConfig.Dest, ""})
+			t.AppendRow(table.Row{name, dot.Src, dot.Dest, ""})
 		}
 	})
 	cobra.CheckErr(err)
