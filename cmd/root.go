@@ -20,7 +20,7 @@ var rootCmd = &cobra.Command{
 
 func printStatus() {
 	t := table.NewWriter()
-	t.SetStyle(table.StyleLight)
+	t.SetStyle(table.StyleRounded)
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Dot", "Src", "Dest", "Status"})
 

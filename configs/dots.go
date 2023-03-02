@@ -31,6 +31,18 @@ func DefaultDotConfigs() (map[string]dot.DotConfig, error) {
 	}
 
 	return map[string]dot.DotConfig{
+		"alacritty": {
+			Src: "alacritty",
+			Dest: func() string {
+				if runtime.GOOS == "linux" {
+					return xdgConfigPath("alacritty")
+				} else if runtime.GOOS == "windows" {
+					return appDataPath("alacritty")
+				}
+				return "-"
+			}(),
+		},
+
 		// go env GOENV
 		"go": {
 			Src: "go",

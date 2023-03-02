@@ -11,7 +11,8 @@ clean:
 
 .PHONY: install
 install:
-	go install github.com/cqroot/$(PROJ_NAME)@latest
+	# go install github.com/cqroot/$(PROJ_NAME)@latest
+	go install $(CURDIR)
 
 .PHONY: uninstall
 uninstall:
