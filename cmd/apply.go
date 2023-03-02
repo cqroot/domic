@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/cqroot/gmdots/internal/configs"
@@ -25,7 +26,10 @@ func runApplyCmd(cmd *cobra.Command, args []string) {
 			filepath.Join(dot.DotsDir(), dotConfig.Src),
 			dotConfig.Dest,
 		)
-		cobra.CheckErr(err)
+		if err != nil {
+			fmt.Print(dotName, ": ")
+			cobra.CheckErr(err)
+		}
 	})
 	cobra.CheckErr(err)
 }

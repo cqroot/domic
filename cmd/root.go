@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
@@ -21,10 +22,20 @@ func printStatus() {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Dot", "Src", "Dest"})
+	t.AppendHeader(table.Row{"Dot", "Src", "Dest", "Status"})
 
 	err := configs.RangeDotConfigs(func(dotName string, dotConfig dot.DotConfig) {
-		t.AppendRow(table.Row{dotName, dotConfig.Src, dotConfig.Dest})
+		ok, err := configs.Check(
+			filepath.Join(dot.DotsDir(), dotConfig.Src),
+			dotConfig.Dest,
+		)
+		if ok {
+			t.AppendRow(table.Row{dotName, dotConfig.Src, dotConfig.Dest, "OK"})
+		} else if err != nil {
+			t.AppendRow(table.Row{dotName, dotConfig.Src, dotConfig.Dest, err.Error()})
+		} else {
+			t.AppendRow(table.Row{dotName, dotConfig.Src, dotConfig.Dest, ""})
+		}
 	})
 	cobra.CheckErr(err)
 
