@@ -10,8 +10,8 @@ clean:
 	rm -f "$(BUILD_DIR)"
 
 .PHONY: install
-install: build
-	cp "$(BUILD_DIR)/$(PROJ_NAME)" $${GOPATH}/bin/
+install:
+	go install github.com/cqroot/$(PROJ_NAME)@latest
 
 .PHONY: uninstall
 uninstall:
