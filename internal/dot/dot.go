@@ -13,7 +13,7 @@ type DotConfig struct {
 }
 
 func BaseDir() string {
-	return filepath.Join(xdg.DataHome, "dotmanager")
+	return filepath.Join(xdg.DataHome, "gmdots")
 }
 
 func DotsDir() string {

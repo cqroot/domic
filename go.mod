@@ -1,4 +1,4 @@
-module github.com/cqroot/dotmanager
+module github.com/cqroot/gmdots
 
 go 1.20
 

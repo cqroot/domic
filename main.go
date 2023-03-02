@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/cqroot/dotmanager/cmd"
+	"github.com/cqroot/gmdots/cmd"
 )
 
 func main() {

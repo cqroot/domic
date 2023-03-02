@@ -3,8 +3,8 @@ package cmd
 import (
 	"path/filepath"
 
-	"github.com/cqroot/dotmanager/internal/configs"
-	"github.com/cqroot/dotmanager/internal/dot"
+	"github.com/cqroot/gmdots/internal/configs"
+	"github.com/cqroot/gmdots/internal/dot"
 	"github.com/spf13/cobra"
 )
 

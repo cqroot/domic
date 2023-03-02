@@ -3,8 +3,8 @@ package configs
 import (
 	"runtime"
 
-	"github.com/cqroot/dotmanager/pkg/file"
-	"github.com/cqroot/dotmanager/pkg/symlink"
+	"github.com/cqroot/gmdots/pkg/file"
+	"github.com/cqroot/gmdots/pkg/symlink"
 )
 
 func Apply(src, dest string) error {

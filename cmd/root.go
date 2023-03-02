@@ -6,8 +6,8 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/dotmanager/internal/configs"
-	"github.com/cqroot/dotmanager/internal/dot"
+	"github.com/cqroot/gmdots/internal/configs"
+	"github.com/cqroot/gmdots/internal/dot"
 )
 
 var rootCmd = &cobra.Command{

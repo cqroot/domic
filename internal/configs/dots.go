@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/cqroot/dotmanager/internal/dot"
+	"github.com/cqroot/gmdots/internal/dot"
 )
 
 func RangeDotConfigs(handleFunc func(dotName string, dotConfig dot.DotConfig)) error {
@@ -58,6 +58,7 @@ func DefaultDotConfigs() (map[string]dot.DotConfig, error) {
 	}
 
 	return map[string]dot.DotConfig{
+		// https://neovim.io/doc/user/starting.html#standard-path
 		"nvim": {
 			Src: "nvim",
 			Dest: func() string {
@@ -70,6 +71,7 @@ func DefaultDotConfigs() (map[string]dot.DotConfig, error) {
 			}(),
 		},
 
+		// https://pip.pypa.io/en/stable/topics/configuration/#location
 		"pip": {
 			Src: "pip/pip.conf",
 			Dest: func() string {
