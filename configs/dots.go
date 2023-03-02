@@ -31,6 +31,7 @@ func DefaultDotConfigs() (map[string]dot.DotConfig, error) {
 	}
 
 	return map[string]dot.DotConfig{
+		// https://github.com/alacritty/alacritty#configuration
 		"alacritty": {
 			Src: "alacritty",
 			Dest: func() string {
