@@ -11,7 +11,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "dm",
+	Use:   "dg",
 	Short: "Dotfiles Manager for Gopher",
 	Long:  "Dotfiles Manager for Gopher",
 	Run:   runRootCmd,

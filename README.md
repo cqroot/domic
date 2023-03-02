@@ -1,7 +1,5 @@
 <div align="center">
-  <p>
-    <img src="https://placehold.co/500x150/3d4070/fff?font=montserrat&text={%20%20DotM%20%20}%20anager" alt="{ DotM } anger" />
-  </p>
+  <h1>Dotfiles manager for Gopher</h1>
 
   <p><i>Manage your <b>dotfiles</b> more easily.</i></p>
 
