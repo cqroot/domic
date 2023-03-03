@@ -11,7 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var initEnableSsh bool
+
 func init() {
+	initCmd.PersistentFlags().BoolVarP(&initEnableSsh, "ssh", "s", false, "Use ssh instead of https when guessing repo url")
+
 	rootCmd.AddCommand(initCmd)
 }
 
@@ -30,10 +34,18 @@ func runInitCmd(cmd *cobra.Command, args []string) {
 func GitClone(repo string) {
 	switch strings.Count(repo, "/") {
 	case 0:
-		repo = "https://github.com/" + repo + "/dotfiles.git"
+		if initEnableSsh {
+			repo = "git@github.com:" + repo + "/dotfiles.git"
+		} else {
+			repo = "https://github.com/" + repo + "/dotfiles.git"
+		}
 
 	case 1:
-		repo = "https://github.com/" + repo
+		if initEnableSsh {
+			repo = "git@github.com:" + repo
+		} else {
+			repo = "https://github.com/" + repo
+		}
 	}
 
 	repoDir := path.BaseDir()
