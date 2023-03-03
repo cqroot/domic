@@ -33,7 +33,7 @@ func printStatus() {
 		} else if err != nil {
 			t.AppendRow(table.Row{name, dot.Src, dot.Dest, err.Error()})
 		} else {
-			t.AppendRow(table.Row{name, dot.Src, dot.Dest, ""})
+			t.AppendRow(table.Row{name, dot.Src, dot.Dest, "Skipped"})
 		}
 	})
 	cobra.CheckErr(err)

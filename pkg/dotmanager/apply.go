@@ -1,6 +1,7 @@
 package dotmanager
 
 import (
+	"os/exec"
 	"path/filepath"
 	"runtime"
 
@@ -16,12 +17,35 @@ func (m DotManager) AbsSrcPath(name string, dot Dot) string {
 	return filepath.Join(DotsDir(), src)
 }
 
-func (m DotManager) Check(name string) (bool, error) {
+func (m DotManager) CheckSkip(name string) bool {
 	dot, ok := m.dotMap[name]
 	if !ok {
+		return true
+	}
+
+	if dot.Dest == "" {
+		return true
+	}
+
+	if dot.Exec != "" {
+		_, err := exec.LookPath(dot.Exec)
+		if err != nil {
+			return true
+		}
+	}
+
+	return false
+}
+
+// returns `false, nil` if skipped.
+// returns `true,  nil` if applied normally.
+// returns `false, err` if an error occurs.
+func (m DotManager) Check(name string) (bool, error) {
+	if m.CheckSkip(name) {
 		return false, nil
 	}
 
+	dot := m.dotMap[name]
 	src := m.AbsSrcPath(name, dot)
 	dest := dot.Dest
 
@@ -32,11 +56,11 @@ func (m DotManager) Check(name string) (bool, error) {
 }
 
 func (m DotManager) Apply(name string) error {
-	dot, ok := m.dotMap[name]
-	if !ok {
+	if m.CheckSkip(name) {
 		return nil
 	}
 
+	dot := m.dotMap[name]
 	src := m.AbsSrcPath(name, dot)
 	dest := dot.Dest
 

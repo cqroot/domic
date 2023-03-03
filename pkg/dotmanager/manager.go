@@ -6,8 +6,9 @@ import (
 )
 
 type Dot struct {
-	Src  string
+	Src  string // If empty, it is equivalent to name.
 	Dest string
+	Exec string // Applied only if exec is present. Don't check if empty.
 }
 
 type DotManager struct {
