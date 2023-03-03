@@ -2,21 +2,12 @@ package dotmanager
 
 import (
 	"os"
-	"path/filepath"
 
-	"github.com/adrg/xdg"
+	"github.com/cqroot/gmdots/pkg/path"
 )
 
-func BaseDir() string {
-	return filepath.Join(xdg.DataHome, "gmdots")
-}
-
-func DotsDir() string {
-	return filepath.Join(BaseDir(), "dots")
-}
-
 func DotNames() ([]string, error) {
-	files, err := os.ReadDir(DotsDir())
+	files, err := os.ReadDir(path.DotsDir())
 	if err != nil {
 		return nil, err
 	}

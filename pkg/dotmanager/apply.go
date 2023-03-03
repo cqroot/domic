@@ -1,48 +1,46 @@
 package dotmanager
 
 import (
+	"errors"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 
 	"github.com/cqroot/gmdots/pkg/file"
+	"github.com/cqroot/gmdots/pkg/path"
 	"github.com/cqroot/gmdots/pkg/symlink"
 )
 
 func (m DotManager) AbsSrcPath(name string, dot Dot) string {
-	src := dot.Src
-	if src == "" {
-		src = name
-	}
-	return filepath.Join(DotsDir(), src)
+	return filepath.Join(path.DotsDir(), dot.Src)
 }
 
-func (m DotManager) CheckSkip(name string) bool {
+func (m DotManager) CheckSkip(name string) error {
 	dot, ok := m.dotMap[name]
 	if !ok {
-		return true
+		return errors.New("Skip: dot config not found")
 	}
 
 	if dot.Dest == "" {
-		return true
+		return errors.New("Skip: empty dest")
 	}
 
 	if dot.Exec != "" {
 		_, err := exec.LookPath(dot.Exec)
 		if err != nil {
-			return true
+			return errors.New("Skip: exec not found")
 		}
 	}
 
-	return false
+	return nil
 }
 
-// returns `false, nil` if skipped.
+// returns `false, nil` if the target does not exist.
 // returns `true,  nil` if applied normally.
 // returns `false, err` if an error occurs.
 func (m DotManager) Check(name string) (bool, error) {
-	if m.CheckSkip(name) {
-		return false, nil
+	if err := m.CheckSkip(name); err != nil {
+		return false, err
 	}
 
 	dot := m.dotMap[name]
@@ -56,7 +54,7 @@ func (m DotManager) Check(name string) (bool, error) {
 }
 
 func (m DotManager) Apply(name string) error {
-	if m.CheckSkip(name) {
+	if err := m.CheckSkip(name); err != nil {
 		return nil
 	}
 

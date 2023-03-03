@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"strings"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -11,7 +12,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "dg",
+	Use:   "gmdots",
 	Short: "Dotfiles Manager for Gopher",
 	Long:  "Dotfiles Manager for Gopher",
 	Run:   runRootCmd,
@@ -32,9 +33,13 @@ func printStatus() {
 		if ok {
 			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgGreen.Sprint("OK")})
 		} else if err != nil {
-			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgRed.Sprint(err.Error())})
+			if strings.HasPrefix(err.Error(), "Skip") {
+				t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgYellow.Sprint(err.Error())})
+			} else {
+				t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgRed.Sprint(err.Error())})
+			}
 		} else {
-			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgYellow.Sprint("Skipped")})
+			t.AppendRow(table.Row{name, dot.Src, dot.Dest, "Not applied"})
 		}
 	})
 	cobra.CheckErr(err)

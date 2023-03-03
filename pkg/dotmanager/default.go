@@ -21,6 +21,7 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 		// go env GOENV
 		"go": {
 			Exec: "go",
+			Src:  "go",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
 					return dm.LinuxXdgConfigHome("go")
@@ -34,6 +35,7 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 		// https://neovim.io/doc/user/starting.html#standard-path
 		"nvim": {
 			Exec: "nvim",
+			Src:  "nvim",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
 					return dm.LinuxXdgConfigHome("nvim")

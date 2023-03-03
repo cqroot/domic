@@ -6,7 +6,7 @@ import (
 )
 
 type Dot struct {
-	Src  string // If empty, it is equivalent to name.
+	Src  string
 	Dest string
 	Exec string // Applied only if exec is present. Don't check if empty.
 }
