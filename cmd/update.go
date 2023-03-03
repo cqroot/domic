@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/cqroot/gmdots/pkg/path"
 	"github.com/spf13/cobra"
+
+	"github.com/cqroot/gmdots/pkg/path"
 )
 
 func init() {

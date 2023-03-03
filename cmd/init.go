@@ -6,8 +6,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/cqroot/gmdots/pkg/path"
 	"github.com/spf13/cobra"
+
+	"github.com/cqroot/gmdots/pkg/path"
 )
 
 var initEnableSsh bool

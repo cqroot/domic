@@ -3,8 +3,10 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/cqroot/gmdots/pkg/dotmanager"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
+
+	"github.com/cqroot/gmdots/pkg/dotmanager"
 )
 
 func init() {
@@ -31,6 +33,8 @@ func runApplyCmd(cmd *cobra.Command, args []string) {
 		if err != nil {
 			fmt.Printf("%s: %s\n", name, err.Error())
 		}
+
+		fmt.Println(text.FgGreen.Sprint(name), "->", dot.Dest)
 	})
 	cobra.CheckErr(err)
 }
