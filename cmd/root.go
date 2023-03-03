@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	"github.com/cqroot/gmdots/pkg/dotmanager"
@@ -29,11 +30,11 @@ func printStatus() {
 		ok, err := dm.Check(name)
 
 		if ok {
-			t.AppendRow(table.Row{name, dot.Src, dot.Dest, "OK"})
+			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgGreen.Sprint("OK")})
 		} else if err != nil {
-			t.AppendRow(table.Row{name, dot.Src, dot.Dest, err.Error()})
+			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgRed.Sprint(err.Error())})
 		} else {
-			t.AppendRow(table.Row{name, dot.Src, dot.Dest, "Skipped"})
+			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgYellow.Sprint("Skipped")})
 		}
 	})
 	cobra.CheckErr(err)
