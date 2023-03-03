@@ -19,10 +19,9 @@ var applyCmd = &cobra.Command{
 }
 
 func runApplyCmd(cmd *cobra.Command, args []string) {
-	dm, err := dotmanager.Default()
-	cobra.CheckErr(err)
+	dm := dotmanager.Default()
 
-	err = dm.Range(func(name string, dot dotmanager.Dot) {
+	err := dm.Range(func(name string, dot dotmanager.Dot) {
 		ok, err := dm.Check(name)
 		if ok || err != nil {
 			return

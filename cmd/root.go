@@ -24,10 +24,9 @@ func printStatus() {
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Dot", "Src", "Dest", "Status"})
 
-	dm, err := dotmanager.Default()
-	cobra.CheckErr(err)
+	dm := dotmanager.Default()
 
-	err = dm.Range(func(name string, dot dotmanager.Dot) {
+	err := dm.Range(func(name string, dot dotmanager.Dot) {
 		ok, err := dm.Check(name)
 
 		if ok {

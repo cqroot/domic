@@ -1,6 +1,7 @@
 package dotmanager
 
 import (
+	"path/filepath"
 	"runtime"
 
 	"github.com/cqroot/gmdots/pkg/path"
@@ -61,6 +62,14 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 					return path.WindowsAppData("pip/pip.ini")
 				}
 				return ""
+			}(),
+		},
+
+		"sqlite": {
+			Exec: "sqlite3",
+			Src:  "sqlite/sqliterc",
+			Dest: func() string {
+				return filepath.Join(path.HomeDir(), ".sqliterc")
 			}(),
 		},
 	}

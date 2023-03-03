@@ -1,9 +1,5 @@
 package dotmanager
 
-import (
-	"os"
-)
-
 type Dot struct {
 	Src  string
 	Dest string
@@ -11,28 +7,17 @@ type Dot struct {
 }
 
 type DotManager struct {
-	homeDir string
-	dotMap  map[string]Dot
+	dotMap map[string]Dot
 }
 
-func New() (*DotManager, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return nil, err
-	}
-
+func New() *DotManager {
 	return &DotManager{
-		homeDir: homeDir,
-		dotMap:  make(map[string]Dot),
-	}, nil
+		dotMap: make(map[string]Dot),
+	}
 }
 
-func Default() (*DotManager, error) {
-	dm, err := New()
-	if err != nil {
-		return nil, err
-	}
-
+func Default() *DotManager {
+	dm := New()
 	dm.dotMap = dm.defaultDotfileMap()
-	return dm, nil
+	return dm
 }
