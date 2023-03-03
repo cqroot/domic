@@ -23,6 +23,14 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			}(),
 		},
 
+		"git": {
+			Exec: "git",
+			Src:  "git",
+			Dest: func() string {
+				return path.LinuxXdgConfigHome("git")
+			}(),
+		},
+
 		// go env GOENV
 		"go": {
 			Exec: "go",

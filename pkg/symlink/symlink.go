@@ -7,9 +7,16 @@ import (
 )
 
 func Check(source, target string) (bool, error) {
+	_, err := os.Lstat(target)
+	if os.IsNotExist(err) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+
 	destination, err := os.Readlink(target)
 	if err != nil {
-		return false, nil
+		return false, errors.New("target file already exists")
 	}
 
 	if destination == source {

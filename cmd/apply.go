@@ -29,7 +29,7 @@ func runApplyCmd(cmd *cobra.Command, args []string) {
 
 		err = dm.Apply(name)
 		if err != nil {
-			fmt.Print(name, ": ", err.Error())
+			fmt.Printf("%s: %s\n", name, err.Error())
 		}
 	})
 	cobra.CheckErr(err)

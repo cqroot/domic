@@ -31,14 +31,16 @@ func printStatus() {
 
 		if ok {
 			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgGreen.Sprint("OK")})
-		} else if err != nil {
-			if strings.HasPrefix(err.Error(), "Skip") {
-				t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgYellow.Sprint(err.Error())})
-			} else {
-				t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgRed.Sprint(err.Error())})
-			}
 		} else {
-			t.AppendRow(table.Row{name, dot.Src, dot.Dest, "Not applied"})
+			if err != nil {
+				if strings.HasPrefix(err.Error(), "Skip") {
+					t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgYellow.Sprint(err.Error())})
+				} else {
+					t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgRed.Sprint(err.Error())})
+				}
+			} else {
+				t.AppendRow(table.Row{name, dot.Src, dot.Dest, "Not applied"})
+			}
 		}
 	})
 	cobra.CheckErr(err)

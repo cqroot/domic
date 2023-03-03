@@ -22,7 +22,11 @@ func DotsDir() string {
 }
 
 func LinuxXdgConfigHome(path string) string {
-	return filepath.Join(HomeDir(), ".config", path)
+	xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
+	if xdgConfigHome == "" {
+		xdgConfigHome = filepath.Join(HomeDir(), ".config")
+	}
+	return filepath.Join(xdgConfigHome, path)
 }
 
 func WindowsAppData(path string) string {
