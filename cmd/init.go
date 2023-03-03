@@ -59,13 +59,14 @@ func GitClone(repo string) {
 	}
 
 	gitArgs := []string{"clone", repo, repoDir}
-	fmt.Println("git", strings.Join(gitArgs, " "))
 
 	err = ExecCmd("git", gitArgs...)
 	cobra.CheckErr(err)
 }
 
 func ExecCmd(name string, arg ...string) error {
+	fmt.Println(name, strings.Join(arg, " "))
+
 	cmd := exec.Command(name, arg...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
