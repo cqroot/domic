@@ -2,7 +2,6 @@ package dotmanager
 
 import (
 	"os"
-	"path/filepath"
 )
 
 type Dot struct {
@@ -36,16 +35,4 @@ func Default() (*DotManager, error) {
 
 	dm.dotMap = dm.defaultDotfileMap()
 	return dm, nil
-}
-
-func (m DotManager) LinuxXdgConfigHome(path string) string {
-	return filepath.Join(m.homeDir, ".config", path)
-}
-
-func (m DotManager) WindowsAppData(path string) string {
-	return filepath.Join(m.homeDir, os.Getenv("APPDATA"), path)
-}
-
-func (m DotManager) WindowsLocalAppData(path string) string {
-	return filepath.Join(m.homeDir, os.Getenv("LOCALAPPDATA"), path)
 }

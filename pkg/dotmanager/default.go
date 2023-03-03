@@ -1,6 +1,10 @@
 package dotmanager
 
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/cqroot/gmdots/pkg/path"
+)
 
 func (dm DotManager) defaultDotfileMap() map[string]Dot {
 	return map[string]Dot{
@@ -10,9 +14,9 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Src:  "alacritty",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
-					return dm.LinuxXdgConfigHome("alacritty")
+					return path.LinuxXdgConfigHome("alacritty")
 				} else if runtime.GOOS == "windows" {
-					return dm.WindowsAppData("alacritty")
+					return path.WindowsAppData("alacritty")
 				}
 				return ""
 			}(),
@@ -24,9 +28,9 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Src:  "go",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
-					return dm.LinuxXdgConfigHome("go")
+					return path.LinuxXdgConfigHome("go")
 				} else if runtime.GOOS == "windows" {
-					return dm.WindowsAppData("go")
+					return path.WindowsAppData("go")
 				}
 				return ""
 			}(),
@@ -38,9 +42,9 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Src:  "nvim",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
-					return dm.LinuxXdgConfigHome("nvim")
+					return path.LinuxXdgConfigHome("nvim")
 				} else if runtime.GOOS == "windows" {
-					return dm.WindowsLocalAppData("nvim")
+					return path.WindowsLocalAppData("nvim")
 				}
 				return ""
 			}(),
@@ -52,9 +56,9 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Src:  "pip/pip.conf",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
-					return dm.LinuxXdgConfigHome("pip/pip.conf")
+					return path.LinuxXdgConfigHome("pip/pip.conf")
 				} else if runtime.GOOS == "windows" {
-					return dm.WindowsAppData("pip/pip.ini")
+					return path.WindowsAppData("pip/pip.ini")
 				}
 				return ""
 			}(),

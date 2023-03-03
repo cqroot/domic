@@ -20,3 +20,15 @@ func BaseDir() string {
 func DotsDir() string {
 	return filepath.Join(BaseDir(), "dots")
 }
+
+func LinuxXdgConfigHome(path string) string {
+	return filepath.Join(HomeDir(), ".config", path)
+}
+
+func WindowsAppData(path string) string {
+	return filepath.Join(os.Getenv("APPDATA"), path)
+}
+
+func WindowsLocalAppData(path string) string {
+	return filepath.Join(os.Getenv("LOCALAPPDATA"), path)
+}
