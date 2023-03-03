@@ -23,10 +23,14 @@ func runApplyCmd(cmd *cobra.Command, args []string) {
 	cobra.CheckErr(err)
 
 	err = dm.Range(func(name string, dot dotmanager.Dot) {
-		err := dm.Apply(name)
+		ok, err := dm.Check(name)
+		if ok || err != nil {
+			return
+		}
+
+		err = dm.Apply(name)
 		if err != nil {
-			fmt.Print(name, ": ")
-			cobra.CheckErr(err)
+			fmt.Print(name, ": ", err.Error())
 		}
 	})
 	cobra.CheckErr(err)
