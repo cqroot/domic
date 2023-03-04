@@ -42,6 +42,21 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Dest: path.DotConfigPath("git"),
 		},
 
+		// https://github.com/extrawurst/gitui/blob/master/KEY_CONFIG.md#key-config
+		"gitui": {
+			Exec: "gitui",
+			Src:  "gitui",
+			Dest: func() string {
+				switch runtime.GOOS {
+				case "linux", "darwin":
+					return path.DotConfigPath("gitui")
+				case "windows":
+					return path.WindowsAppDataPath("gitui")
+				}
+				return ""
+			}(),
+		},
+
 		// go env GOENV
 		"go": {
 			Exec: "go",
