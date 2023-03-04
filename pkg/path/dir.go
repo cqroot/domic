@@ -21,18 +21,14 @@ func DotsDir() string {
 	return filepath.Join(BaseDir(), "dots")
 }
 
-func LinuxXdgConfigHome(path string) string {
-	xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
-	if xdgConfigHome == "" {
-		xdgConfigHome = filepath.Join(HomeDir(), ".config")
-	}
-	return filepath.Join(xdgConfigHome, path)
+func DotConfigPath(path string) string {
+	return filepath.Join(HomeDir(), ".config", path)
 }
 
-func WindowsAppData(path string) string {
+func WindowsAppDataPath(path string) string {
 	return filepath.Join(os.Getenv("APPDATA"), path)
 }
 
-func WindowsLocalAppData(path string) string {
+func WindowsLocalAppDataPath(path string) string {
 	return filepath.Join(os.Getenv("LOCALAPPDATA"), path)
 }

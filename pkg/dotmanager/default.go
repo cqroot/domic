@@ -15,9 +15,9 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Src:  "alacritty",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
-					return path.LinuxXdgConfigHome("alacritty")
+					return path.DotConfigPath("alacritty")
 				} else if runtime.GOOS == "windows" {
-					return path.WindowsAppData("alacritty")
+					return path.WindowsAppDataPath("alacritty")
 				}
 				return ""
 			}(),
@@ -27,7 +27,7 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Exec: "git",
 			Src:  "git",
 			Dest: func() string {
-				return path.LinuxXdgConfigHome("git")
+				return path.DotConfigPath("git")
 			}(),
 		},
 
@@ -37,9 +37,9 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Src:  "go",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
-					return path.LinuxXdgConfigHome("go")
+					return path.DotConfigPath("go")
 				} else if runtime.GOOS == "windows" {
-					return path.WindowsAppData("go")
+					return path.WindowsAppDataPath("go")
 				}
 				return ""
 			}(),
@@ -51,9 +51,9 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Src:  "nvim",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
-					return path.LinuxXdgConfigHome("nvim")
+					return path.DotConfigPath("nvim")
 				} else if runtime.GOOS == "windows" {
-					return path.WindowsLocalAppData("nvim")
+					return path.WindowsLocalAppDataPath("nvim")
 				}
 				return ""
 			}(),
@@ -65,9 +65,24 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Src:  "pip/pip.conf",
 			Dest: func() string {
 				if runtime.GOOS == "linux" {
-					return path.LinuxXdgConfigHome("pip/pip.conf")
+					return path.DotConfigPath("pip/pip.conf")
 				} else if runtime.GOOS == "windows" {
-					return path.WindowsAppData("pip/pip.ini")
+					return path.WindowsAppDataPath("pip/pip.ini")
+				}
+				return ""
+			}(),
+		},
+
+		// https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.3#the-profile-files
+		"powershell": {
+			Exec: "pwsh",
+			Src:  "powershell",
+			Dest: func() string {
+				switch runtime.GOOS {
+				case "linux", "darwin":
+					return path.DotConfigPath("powershell")
+				case "windows":
+					return filepath.Join(path.HomeDir(), "Documents/PowerShell")
 				}
 				return ""
 			}(),
