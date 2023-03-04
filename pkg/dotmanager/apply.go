@@ -4,9 +4,7 @@ import (
 	"errors"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 
-	"github.com/cqroot/gmdots/pkg/file"
 	"github.com/cqroot/gmdots/pkg/path"
 	"github.com/cqroot/gmdots/pkg/symlink"
 )
@@ -47,9 +45,6 @@ func (m DotManager) Check(name string) (bool, error) {
 	src := m.AbsSrcPath(name, dot)
 	dest := dot.Dest
 
-	if runtime.GOOS == "windows" {
-		return file.Check(src, dest)
-	}
 	return symlink.Check(src, dest)
 }
 
@@ -62,8 +57,5 @@ func (m DotManager) Apply(name string) error {
 	src := m.AbsSrcPath(name, dot)
 	dest := dot.Dest
 
-	if runtime.GOOS == "windows" {
-		return file.Apply(src, dest)
-	}
 	return symlink.Apply(src, dest)
 }
