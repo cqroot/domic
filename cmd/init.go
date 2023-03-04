@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 	"strings"
 
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 
 	"github.com/cqroot/gmdots/pkg/path"
@@ -23,12 +26,74 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "",
 	Long:  "",
-	Args:  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	Args:  cobra.MatchAll(cobra.RangeArgs(0, 1), cobra.OnlyValidArgs),
 	Run:   runInitCmd,
 }
 
 func runInitCmd(cmd *cobra.Command, args []string) {
-	GitClone(args[0])
+	if len(args) == 1 {
+		GitClone(args[0])
+		return
+	}
+
+	fmt.Println(`
+  # Execute the following command to initialize your dotfiles repository
+  # Before executing each command, you should make sure that the command is ok.`)
+	fmt.Println()
+	fmt.Println("  mkdir -p", strconv.Quote(path.DotsDir()))
+
+	t := table.NewWriter()
+	t.SetStyle(table.Style{
+		Box: table.BoxStyle{
+			BottomLeft:       " ",
+			BottomRight:      " ",
+			BottomSeparator:  " ",
+			Left:             " ",
+			LeftSeparator:    " ",
+			MiddleHorizontal: " ",
+			MiddleSeparator:  " ",
+			MiddleVertical:   " ",
+			PaddingLeft:      " ",
+			PaddingRight:     "",
+			PageSeparator:    "\n",
+			Right:            " ",
+			RightSeparator:   " ",
+			TopLeft:          " ",
+			TopRight:         " ",
+			TopSeparator:     " ",
+			UnfinishedRow:    " ",
+		},
+		Options: table.Options{
+			DrawBorder:      true,
+			SeparateColumns: true,
+			SeparateFooter:  true,
+			SeparateHeader:  true,
+			SeparateRows:    false,
+		},
+	})
+	t.SetOutputMirror(os.Stdout)
+
+	for _, dot := range DotManager.DotMap {
+		_, err := os.Stat(dot.Dest)
+		if err != nil {
+			continue
+		}
+
+		dotPath := filepath.Join(path.DotsDir(), dot.Src)
+		if strings.HasPrefix(filepath.Base(dotPath), ".") {
+			dotPath = filepath.Join(filepath.Dir(dotPath), filepath.Base(dotPath)[1:])
+		}
+
+		if strings.Contains(dot.Src, "/") {
+			fmt.Println("  mkdir -p", strconv.Quote(filepath.Dir(dotPath)))
+		}
+
+		t.AppendRow(table.Row{"mv", strconv.Quote(dot.Dest), strconv.Quote(dotPath)})
+	}
+	t.Render()
+
+	fmt.Println("  cd", strconv.Quote(path.BaseDir()))
+	fmt.Println()
 }
 
 func GitClone(repo string) {
