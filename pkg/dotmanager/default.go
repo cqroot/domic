@@ -9,6 +9,19 @@ import (
 
 func (dm DotManager) defaultDotfileMap() map[string]Dot {
 	return map[string]Dot{
+		// ************************************************************
+		// *  Custom                                                  *
+		// ************************************************************
+		"bash": {
+			Exec: "bash",
+			Src:  "bash",
+			Dest: path.DotConfigPath("bash"),
+		},
+
+		// ************************************************************
+		// *  Standard                                                *
+		// ************************************************************
+
 		// https://github.com/alacritty/alacritty#configuration
 		"alacritty": {
 			Exec: "alacritty",
@@ -26,9 +39,7 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 		"git": {
 			Exec: "git",
 			Src:  "git",
-			Dest: func() string {
-				return path.DotConfigPath("git")
-			}(),
+			Dest: path.DotConfigPath("git"),
 		},
 
 		// go env GOENV
