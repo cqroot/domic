@@ -71,6 +71,21 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			}(),
 		},
 
+		// https://github.com/gokcehan/lf/blob/master/docstring.go#L240
+		"lf": {
+			Exec: "lf",
+			Src:  "lf",
+			Dest: func() string {
+				switch runtime.GOOS {
+				case "linux", "darwin":
+					return path.DotConfigPath("lf")
+				case "windows":
+					return path.WindowsLocalAppDataPath("lf")
+				}
+				return ""
+			}(),
+		},
+
 		// https://neovim.io/doc/user/starting.html#standard-path
 		"nvim": {
 			Exec: "nvim",
