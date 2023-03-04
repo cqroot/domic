@@ -16,7 +16,7 @@ func (m DotManager) AbsSrcPath(name string, dot Dot) string {
 }
 
 func (m DotManager) CheckSkip(name string) error {
-	dot, ok := m.dotMap[name]
+	dot, ok := m.DotMap[name]
 	if !ok {
 		return errors.New("Skip: dot config not found")
 	}
@@ -43,7 +43,7 @@ func (m DotManager) Check(name string) (bool, error) {
 		return false, err
 	}
 
-	dot := m.dotMap[name]
+	dot := m.DotMap[name]
 	src := m.AbsSrcPath(name, dot)
 	dest := dot.Dest
 
@@ -58,7 +58,7 @@ func (m DotManager) Apply(name string) error {
 		return nil
 	}
 
-	dot := m.dotMap[name]
+	dot := m.DotMap[name]
 	src := m.AbsSrcPath(name, dot)
 	dest := dot.Dest
 

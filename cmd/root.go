@@ -11,6 +11,8 @@ import (
 	"github.com/cqroot/gmdots/pkg/dotmanager"
 )
 
+var DotManager = dotmanager.Default()
+
 var rootCmd = &cobra.Command{
 	Use:   "gmdots",
 	Short: "Dotfiles Manager for Gopher",
@@ -24,10 +26,8 @@ func printStatus() {
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Dot", "Src", "Dest", "Status"})
 
-	dm := dotmanager.Default()
-
-	err := dm.Range(func(name string, dot dotmanager.Dot) {
-		ok, err := dm.Check(name)
+	err := DotManager.Range(func(name string, dot dotmanager.Dot) {
+		ok, err := DotManager.Check(name)
 
 		if ok {
 			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgGreen.Sprint("OK")})

@@ -30,7 +30,7 @@ func (m DotManager) Range(handleFunc func(name string, dot Dot)) error {
 	}
 
 	for _, name := range names {
-		dotfile, ok := m.dotMap[name]
+		dotfile, ok := m.DotMap[name]
 		if !ok {
 			continue
 		}

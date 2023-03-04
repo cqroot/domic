@@ -7,17 +7,17 @@ type Dot struct {
 }
 
 type DotManager struct {
-	dotMap map[string]Dot
+	DotMap map[string]Dot
 }
 
 func New() *DotManager {
 	return &DotManager{
-		dotMap: make(map[string]Dot),
+		DotMap: make(map[string]Dot),
 	}
 }
 
 func Default() *DotManager {
 	dm := New()
-	dm.dotMap = dm.defaultDotfileMap()
+	dm.DotMap = dm.defaultDotfileMap()
 	return dm
 }

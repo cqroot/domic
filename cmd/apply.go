@@ -21,15 +21,13 @@ var applyCmd = &cobra.Command{
 }
 
 func runApplyCmd(cmd *cobra.Command, args []string) {
-	dm := dotmanager.Default()
-
-	err := dm.Range(func(name string, dot dotmanager.Dot) {
-		ok, err := dm.Check(name)
+	err := DotManager.Range(func(name string, dot dotmanager.Dot) {
+		ok, err := DotManager.Check(name)
 		if ok || err != nil {
 			return
 		}
 
-		err = dm.Apply(name)
+		err = DotManager.Apply(name)
 		if err != nil {
 			fmt.Printf("%s: %s\n", name, err.Error())
 		}
