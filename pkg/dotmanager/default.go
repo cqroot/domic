@@ -141,5 +141,14 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 				return filepath.Join(path.HomeDir(), ".sqliterc")
 			}(),
 		},
+
+		// https://starship.rs/config/#configuration
+		"starship": {
+			Exec: "starship",
+			Src:  "starship/starship.toml",
+			Dest: func() string {
+				return path.DotConfigPath("starship.toml")
+			}(),
+		},
 	}
 }
