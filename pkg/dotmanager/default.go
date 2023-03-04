@@ -18,6 +18,11 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Dest: path.DotConfigPath("bash"),
 		},
 
+		"bin": {
+			Src:  "bin",
+			Dest: path.HomeDotPath("bin"),
+		},
+
 		// ************************************************************
 		// *  Standard                                                *
 		// ************************************************************
