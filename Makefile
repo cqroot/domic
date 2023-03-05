@@ -21,3 +21,7 @@ uninstall:
 .PHONY: test
 test:
 	go test -v ./...
+
+.PHONY: docs
+docs:
+	go run $(CURDIR)/docs/apps/main.go > $(CURDIR)/docs/apps.md

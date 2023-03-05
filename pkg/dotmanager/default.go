@@ -2,12 +2,11 @@ package dotmanager
 
 import (
 	"path/filepath"
-	"runtime"
 
 	"github.com/cqroot/gmdots/pkg/path"
 )
 
-func (dm DotManager) defaultDotfileMap() map[string]Dot {
+func DefaultDotMap(goos string) map[string]Dot {
 	return map[string]Dot{
 		// ************************************************************
 		// *  Custom                                                  *
@@ -16,29 +15,31 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Exec: "bash",
 			Src:  "bash",
 			Dest: path.DotConfigPath("bash"),
+			Doc:  "You can put some bash files in this directory and source them in `.bashrc`.",
 		},
 
 		"bin": {
 			Src:  "bin",
 			Dest: path.HomeDotPath("bin"),
+			Doc:  "You can put some executable scripts in this directory.",
 		},
 
 		// ************************************************************
 		// *  Standard                                                *
 		// ************************************************************
 
-		// https://github.com/alacritty/alacritty#configuration
 		"alacritty": {
 			Exec: "alacritty",
 			Src:  "alacritty",
 			Dest: func() string {
-				if runtime.GOOS == "linux" {
+				if goos == "linux" {
 					return path.DotConfigPath("alacritty")
-				} else if runtime.GOOS == "windows" {
+				} else if goos == "windows" {
 					return path.WindowsAppDataPath("alacritty")
 				}
 				return ""
 			}(),
+			Doc: "https://github.com/alacritty/alacritty#configuration",
 		},
 
 		"git": {
@@ -47,12 +48,11 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			Dest: path.DotConfigPath("git"),
 		},
 
-		// https://github.com/extrawurst/gitui/blob/master/KEY_CONFIG.md#key-config
 		"gitui": {
 			Exec: "gitui",
 			Src:  "gitui",
 			Dest: func() string {
-				switch runtime.GOOS {
+				switch goos {
 				case "linux", "darwin":
 					return path.DotConfigPath("gitui")
 				case "windows":
@@ -60,28 +60,28 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 				}
 				return ""
 			}(),
+			Doc: "https://github.com/extrawurst/gitui/blob/master/KEY_CONFIG.md#key-config",
 		},
 
-		// go env GOENV
 		"go": {
 			Exec: "go",
 			Src:  "go",
 			Dest: func() string {
-				if runtime.GOOS == "linux" {
+				if goos == "linux" {
 					return path.DotConfigPath("go")
-				} else if runtime.GOOS == "windows" {
+				} else if goos == "windows" {
 					return path.WindowsAppDataPath("go")
 				}
 				return ""
 			}(),
+			Doc: "go env GOENV",
 		},
 
-		// https://github.com/gokcehan/lf/blob/master/docstring.go#L240
 		"lf": {
 			Exec: "lf",
 			Src:  "lf",
 			Dest: func() string {
-				switch runtime.GOOS {
+				switch goos {
 				case "linux", "darwin":
 					return path.DotConfigPath("lf")
 				case "windows":
@@ -89,42 +89,42 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 				}
 				return ""
 			}(),
+			Doc: "https://github.com/gokcehan/lf/blob/master/docstring.go#L240",
 		},
 
-		// https://neovim.io/doc/user/starting.html#standard-path
 		"nvim": {
 			Exec: "nvim",
 			Src:  "nvim",
 			Dest: func() string {
-				if runtime.GOOS == "linux" {
+				if goos == "linux" {
 					return path.DotConfigPath("nvim")
-				} else if runtime.GOOS == "windows" {
+				} else if goos == "windows" {
 					return path.WindowsLocalAppDataPath("nvim")
 				}
 				return ""
 			}(),
+			Doc: "https://neovim.io/doc/user/starting.html#standard-path",
 		},
 
-		// https://pip.pypa.io/en/stable/topics/configuration/#location
 		"pip": {
 			Exec: "pip",
 			Src:  "pip/pip.conf",
 			Dest: func() string {
-				if runtime.GOOS == "linux" {
+				if goos == "linux" {
 					return path.DotConfigPath("pip/pip.conf")
-				} else if runtime.GOOS == "windows" {
+				} else if goos == "windows" {
 					return path.WindowsAppDataPath("pip/pip.ini")
 				}
 				return ""
 			}(),
+			Doc: "https://pip.pypa.io/en/stable/topics/configuration/#location",
 		},
 
-		// https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.3#the-profile-files
 		"powershell": {
 			Exec: "pwsh",
 			Src:  "powershell",
 			Dest: func() string {
-				switch runtime.GOOS {
+				switch goos {
 				case "linux", "darwin":
 					return path.DotConfigPath("powershell")
 				case "windows":
@@ -132,6 +132,7 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 				}
 				return ""
 			}(),
+			Doc: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.3#the-profile-files",
 		},
 
 		"sqlite": {
@@ -142,13 +143,13 @@ func (dm DotManager) defaultDotfileMap() map[string]Dot {
 			}(),
 		},
 
-		// https://starship.rs/config/#configuration
 		"starship": {
 			Exec: "starship",
 			Src:  "starship/starship.toml",
 			Dest: func() string {
 				return path.DotConfigPath("starship.toml")
 			}(),
+			Doc: "https://starship.rs/config/#configuration",
 		},
 	}
 }

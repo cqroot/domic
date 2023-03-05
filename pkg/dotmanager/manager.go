@@ -1,9 +1,12 @@
 package dotmanager
 
+import "runtime"
+
 type Dot struct {
 	Src  string
 	Dest string
 	Exec string // Applied only if exec is present. Don't check if empty.
+	Doc  string // Documentation for configuration file paths. Usually a link to somewhere on the official website.
 }
 
 type DotManager struct {
@@ -18,6 +21,6 @@ func New() *DotManager {
 
 func Default() *DotManager {
 	dm := New()
-	dm.DotMap = dm.defaultDotfileMap()
+	dm.DotMap = DefaultDotMap(runtime.GOOS)
 	return dm
 }
