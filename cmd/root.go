@@ -28,18 +28,19 @@ func printStatus() {
 
 	err := DotManager.Range(func(name string, dot dotmanager.Dot) {
 		ok, err := DotManager.Check(name)
+		dest := strings.ReplaceAll(dot.Dest, "\\", "/")
 
 		if ok {
-			t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgGreen.Sprint("OK")})
+			t.AppendRow(table.Row{name, dot.Src, dest, text.FgGreen.Sprint("✔")})
 		} else {
 			if err != nil {
 				if strings.HasPrefix(err.Error(), "Skip") {
-					t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgYellow.Sprint(err.Error())})
+					t.AppendRow(table.Row{name, dot.Src, dest, text.FgYellow.Sprint(err.Error())})
 				} else {
-					t.AppendRow(table.Row{name, dot.Src, dot.Dest, text.FgRed.Sprint(err.Error())})
+					t.AppendRow(table.Row{name, dot.Src, dest, text.FgRed.Sprint(err.Error())})
 				}
 			} else {
-				t.AppendRow(table.Row{name, dot.Src, dot.Dest, "Not applied"})
+				t.AppendRow(table.Row{name, dot.Src, dest, "✖"})
 			}
 		}
 	})
