@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -20,5 +21,5 @@ var basedirCmd = &cobra.Command{
 }
 
 func runBasedirCmd(cmd *cobra.Command, args []string) {
-	fmt.Println(path.BaseDir())
+	fmt.Println(strings.ReplaceAll(path.BaseDir(), "\\", "/"))
 }
