@@ -31,10 +31,12 @@ func DefaultDotMap(goos string) map[string]Dot {
 			Exec: "alacritty",
 			Src:  "alacritty",
 			Dest: func() string {
-				if goos == "linux" {
+				switch goos {
+				case "linux", "darwin":
 					return path.DotConfigPath("alacritty")
-				} else if goos == "windows" {
+				case "windows":
 					return path.WindowsAppDataPath("alacritty")
+
 				}
 				return ""
 			}(),
@@ -95,9 +97,10 @@ func DefaultDotMap(goos string) map[string]Dot {
 			Exec: "nvim",
 			Src:  "nvim",
 			Dest: func() string {
-				if goos == "linux" {
+				switch goos {
+				case "linux", "darwin":
 					return path.DotConfigPath("nvim")
-				} else if goos == "windows" {
+				case "windows":
 					return path.WindowsLocalAppDataPath("nvim")
 				}
 				return ""
@@ -109,9 +112,12 @@ func DefaultDotMap(goos string) map[string]Dot {
 			Exec: "pip",
 			Src:  "pip/pip.conf",
 			Dest: func() string {
-				if goos == "linux" {
+				switch goos {
+				case "linux":
 					return path.DotConfigPath("pip/pip.conf")
-				} else if goos == "windows" {
+				case "darwin":
+					return path.DotConfigPath("pip/pip.conf") // `$HOME/Library/Application Support/pip/pip.conf` is not supported.
+				case "windows":
 					return path.WindowsAppDataPath("pip/pip.ini")
 				}
 				return ""

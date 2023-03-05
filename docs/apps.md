@@ -3,7 +3,7 @@
 ## alacritty
 
 - Linux: `$HOME/.config/alacritty`
-- MacOS: -
+- MacOS: `$HOME/.config/alacritty`
 - Windows: `%APPDATA%/alacritty`
 - Doc: https://github.com/alacritty/alacritty#configuration
 
@@ -51,14 +51,14 @@
 ## nvim
 
 - Linux: `$HOME/.config/nvim`
-- MacOS: -
+- MacOS: `$HOME/.config/nvim`
 - Windows: `%LOCALAPPDATA%/nvim`
 - Doc: https://neovim.io/doc/user/starting.html#standard-path
 
 ## pip
 
 - Linux: `$HOME/.config/pip/pip.conf`
-- MacOS: -
+- MacOS: `$HOME/.config/pip/pip.conf`
 - Windows: `%APPDATA%/pip/pip.ini`
 - Doc: https://pip.pypa.io/en/stable/topics/configuration/#location
 
