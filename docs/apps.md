@@ -82,3 +82,10 @@
 - Windows: `$HOME/.config/starship.toml`
 - Doc: https://starship.rs/config/#configuration
 
+## wezterm
+
+- Linux: `$HOME/.config/wezterm`
+- MacOS: `$HOME/.config/wezterm`
+- Windows: `$HOME/.config/wezterm`
+- Doc: https://wezfurlong.org/wezterm/config/files.html
+

@@ -27,7 +27,6 @@ func DefaultDotMap(goos string) map[string]Dot {
 		// ************************************************************
 		// *  Standard                                                *
 		// ************************************************************
-
 		"alacritty": {
 			Exec: "alacritty",
 			Src:  "alacritty",
@@ -150,6 +149,13 @@ func DefaultDotMap(goos string) map[string]Dot {
 				return path.DotConfigPath("starship.toml")
 			}(),
 			Doc: "https://starship.rs/config/#configuration",
+		},
+
+		"wezterm": {
+			Exec: "wezterm",
+			Src:  "wezterm",
+			Dest: path.DotConfigPath("wezterm"),
+			Doc:  "https://wezfurlong.org/wezterm/config/files.html",
 		},
 	}
 }

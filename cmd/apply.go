@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
@@ -30,9 +31,10 @@ func runApplyCmd(cmd *cobra.Command, args []string) {
 		err = DotManager.Apply(name)
 		if err != nil {
 			fmt.Printf("%s: %s\n", name, err.Error())
+			return
 		}
 
-		fmt.Println(text.FgGreen.Sprint(name), "->", dot.Dest)
+		fmt.Println(text.FgGreen.Sprint(name), "->", strings.ReplaceAll(dot.Dest, "\\", "/"))
 	})
 	cobra.CheckErr(err)
 }
