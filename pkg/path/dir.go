@@ -36,7 +36,7 @@ func HomeDir() string {
 }
 
 func BaseDir() string {
-	return filepath.Join(HomeDir(), ".local/share/doter")
+	return filepath.Join(HomeDir(), ".dotfiles")
 }
 
 func DotsDir() string {
