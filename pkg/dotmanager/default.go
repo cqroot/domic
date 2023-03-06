@@ -93,6 +93,21 @@ func DefaultDotMap(goos string) map[string]Dot {
 			Doc: "https://github.com/gokcehan/lf/blob/master/docstring.go#L240",
 		},
 
+		"mpv": {
+			Exec: "mpv",
+			Src:  "mpv",
+			Dest: func() string {
+				switch goos {
+				case "linux", "darwin":
+					return path.DotConfigPath("mpv")
+				case "windows":
+					return path.WindowsAppDataPath("mpv")
+				}
+				return ""
+			}(),
+			Doc: "https://mpv.io/manual/stable/#configuration-files",
+		},
+
 		"nvim": {
 			Exec: "nvim",
 			Src:  "nvim",

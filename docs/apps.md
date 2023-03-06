@@ -48,6 +48,13 @@
 - Windows: `%LOCALAPPDATA%/lf`
 - Doc: https://github.com/gokcehan/lf/blob/master/docstring.go#L240
 
+## mpv
+
+- Linux: `$HOME/.config/mpv`
+- MacOS: `$HOME/.config/mpv`
+- Windows: `%APPDATA%/mpv`
+- Doc: https://mpv.io/manual/stable/#configuration-files
+
 ## nvim
 
 - Linux: `$HOME/.config/nvim`
