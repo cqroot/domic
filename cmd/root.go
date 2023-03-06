@@ -8,13 +8,13 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/gmdots/pkg/dotmanager"
+	"github.com/cqroot/doter/pkg/dotmanager"
 )
 
 var DotManager = dotmanager.Default()
 
 var rootCmd = &cobra.Command{
-	Use:   "gmdots",
+	Use:   "doter",
 	Short: "Dotfiles Manager for Gopher",
 	Long:  "Dotfiles Manager for Gopher",
 	Run:   runRootCmd,

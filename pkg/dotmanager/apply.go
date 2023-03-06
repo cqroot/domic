@@ -5,8 +5,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/cqroot/gmdots/pkg/path"
-	"github.com/cqroot/gmdots/pkg/symlink"
+	"github.com/cqroot/doter/pkg/path"
+	"github.com/cqroot/doter/pkg/symlink"
 )
 
 func (m DotManager) AbsSrcPath(name string, dot Dot) string {

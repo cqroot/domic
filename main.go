@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/cqroot/gmdots/cmd"
+	"github.com/cqroot/doter/cmd"
 )
 
 func main() {

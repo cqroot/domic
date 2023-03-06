@@ -3,7 +3,7 @@ package dotmanager
 import (
 	"os"
 
-	"github.com/cqroot/gmdots/pkg/path"
+	"github.com/cqroot/doter/pkg/path"
 )
 
 func DotNames() ([]string, error) {

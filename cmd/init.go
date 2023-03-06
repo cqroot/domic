@@ -11,7 +11,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/gmdots/pkg/path"
+	"github.com/cqroot/doter/pkg/path"
 )
 
 var initEnableSsh bool

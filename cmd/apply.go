@@ -7,7 +7,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/gmdots/pkg/dotmanager"
+	"github.com/cqroot/doter/pkg/dotmanager"
 )
 
 func init() {

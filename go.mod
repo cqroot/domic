@@ -1,4 +1,4 @@
-module github.com/cqroot/gmdots
+module github.com/cqroot/doter
 
 go 1.20
 

@@ -3,7 +3,7 @@ package dotmanager
 import (
 	"path/filepath"
 
-	"github.com/cqroot/gmdots/pkg/path"
+	"github.com/cqroot/doter/pkg/path"
 )
 
 func DefaultDotMap(goos string) map[string]Dot {

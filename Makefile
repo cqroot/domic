@@ -1,4 +1,4 @@
-PROJ_NAME=gmdots
+PROJ_NAME=doter
 BUILD_DIR=$(CURDIR)/.build
 
 .PHONY: build
