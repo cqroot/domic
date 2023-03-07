@@ -40,7 +40,7 @@ func BaseDir() string {
 }
 
 func DotsDir() string {
-	return filepath.Join(BaseDir(), "dots")
+	return BaseDir()
 }
 
 // $HOME/.config/{path}
@@ -53,6 +53,7 @@ func HomeDotPath(path string) string {
 	return filepath.Join(HomeDir(), "."+path)
 }
 
+// $HOME/Library/Application Support/{path}
 func ApplicationSupportPath(path string) string {
 	return filepath.Join(HomeDir(), "Library/Application Support", path)
 }

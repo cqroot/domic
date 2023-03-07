@@ -37,7 +37,7 @@ func runApplyCmd(cmd *cobra.Command, args []string) {
 
 		err := dot.Apply()
 		if err != nil {
-			fmt.Printf(text.FgRed.Sprintf("%s: %s\n", name, err.Error()))
+			fmt.Print(text.FgRed.Sprintf("%s: %s\n", name, err.Error()))
 			continue
 		}
 	}

@@ -25,3 +25,9 @@ test:
 .PHONY: docs
 docs:
 	go run $(CURDIR)/docs/apps/main.go > $(CURDIR)/docs/apps.md
+
+.PHONY: check
+check:
+	golangci-lint run
+	@echo
+	gofumpt -l .
