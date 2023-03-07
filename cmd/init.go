@@ -11,6 +11,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 
+	"github.com/cqroot/doter/pkg/dotfiles"
 	"github.com/cqroot/doter/pkg/path"
 )
 
@@ -40,7 +41,7 @@ func runInitCmd(cmd *cobra.Command, args []string) {
   # Execute the following command to initialize your dotfiles repository
   # Before executing each command, you should make sure that the command is ok.`)
 	fmt.Println()
-	fmt.Println("  mkdir -p", strconv.Quote(path.DotsDir()))
+	fmt.Println("  mkdir -p", strconv.Quote(strings.ReplaceAll(path.DotsDir(), "\\", "/")))
 
 	t := table.NewWriter()
 	t.SetStyle(table.Style{
@@ -73,26 +74,30 @@ func runInitCmd(cmd *cobra.Command, args []string) {
 	})
 	t.SetOutputMirror(os.Stdout)
 
-	for _, dot := range DotManager.DotMap {
-		_, err := os.Stat(dot.Dest)
+	for _, dot := range dotfiles.Dotfiles {
+		_, err := os.Stat(dot.Dst())
 		if err != nil {
 			continue
 		}
 
-		dotPath := filepath.Join(path.DotsDir(), dot.Src)
+		dotPath := dot.Src()
 		if strings.HasPrefix(filepath.Base(dotPath), ".") {
 			dotPath = filepath.Join(filepath.Dir(dotPath), filepath.Base(dotPath)[1:])
 		}
 
-		if strings.Contains(dot.Src, "/") {
-			fmt.Println("  mkdir -p", strconv.Quote(filepath.Dir(dotPath)))
+		if strings.Contains(dot.RelSrc, "/") {
+			fmt.Println("  mkdir -p", strconv.Quote(strings.ReplaceAll(filepath.Dir(dotPath), "\\", "/")))
 		}
 
-		t.AppendRow(table.Row{"mv", strconv.Quote(dot.Dest), strconv.Quote(dotPath)})
+		t.AppendRow(table.Row{
+			"mv", strconv.Quote(dot.Dst()),
+			strconv.Quote(strings.ReplaceAll(dotPath, "\\", "/")),
+		})
 	}
+
 	t.Render()
 
-	fmt.Println("  cd", strconv.Quote(path.BaseDir()))
+	fmt.Println("  cd", strconv.Quote(strings.ReplaceAll(path.BaseDir(), "\\", "/")))
 	fmt.Println()
 }
 

@@ -16,13 +16,13 @@ func Check(source, target string) (bool, error) {
 
 	destination, err := os.Readlink(target)
 	if err != nil {
-		return false, errors.New("target file already exists")
+		return false, errors.New("destination dotfile already exists")
 	}
 
-	if destination == source {
+	if filepath.FromSlash(destination) == filepath.FromSlash(source) {
 		return true, nil
 	} else {
-		return false, errors.New("target file already exists")
+		return false, errors.New("destination dotfile already exists")
 	}
 }
 
@@ -43,4 +43,15 @@ func Apply(source, target string) error {
 	}
 
 	return os.Symlink(source, target)
+}
+
+func Revoke(source, target string) error {
+	ok, err := Check(source, target)
+	if err != nil {
+		return nil
+	}
+	if !ok {
+		return nil
+	}
+	return os.Remove(target)
 }

@@ -53,6 +53,10 @@ func HomeDotPath(path string) string {
 	return filepath.Join(HomeDir(), "."+path)
 }
 
+func ApplicationSupportPath(path string) string {
+	return filepath.Join(HomeDir(), "Library/Application Support", path)
+}
+
 // %APPDATA%/{path}
 func WindowsAppDataPath(path string) string {
 	appDataDir := os.Getenv("APPDATA")

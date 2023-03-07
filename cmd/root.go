@@ -2,16 +2,14 @@ package cmd
 
 import (
 	"os"
-	"strings"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/doter/pkg/dotmanager"
+	"github.com/cqroot/doter/pkg/dotfile"
+	"github.com/cqroot/doter/pkg/dotfiles"
 )
-
-var DotManager = dotmanager.Default()
 
 var rootCmd = &cobra.Command{
 	Use:   "doter",
@@ -21,30 +19,32 @@ var rootCmd = &cobra.Command{
 }
 
 func printStatus() {
+	dots := dotfiles.Dotfiles
+	names, err := dotfiles.LocalDotNames()
+	cobra.CheckErr(err)
+
 	t := table.NewWriter()
 	t.SetStyle(table.StyleRounded)
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Dot", "Src", "Dest", "Status"})
+	t.AppendHeader(table.Row{"Dot", "Dst", "Status"})
 
-	err := DotManager.Range(func(name string, dot dotmanager.Dot) {
-		ok, err := DotManager.Check(name)
-		dest := strings.ReplaceAll(dot.Dest, "\\", "/")
-
-		if ok {
-			t.AppendRow(table.Row{name, dot.Src, dest, text.FgGreen.Sprint("✔")})
-		} else {
-			if err != nil {
-				if strings.HasPrefix(err.Error(), "Skip") {
-					t.AppendRow(table.Row{name, dot.Src, dest, text.FgYellow.Sprint(err.Error())})
-				} else {
-					t.AppendRow(table.Row{name, dot.Src, dest, text.FgRed.Sprint(err.Error())})
-				}
-			} else {
-				t.AppendRow(table.Row{name, dot.Src, dest, "✖"})
-			}
+	for _, name := range names {
+		dot, ok := dots[name]
+		if !ok {
+			continue
 		}
-	})
-	cobra.CheckErr(err)
+
+		switch dot.State() {
+		case dotfile.StateApplied:
+			t.AppendRow(table.Row{name, dot.Dst(), text.FgGreen.Sprint("✔")})
+		case dotfile.StateUnapplied:
+			t.AppendRow(table.Row{name, dot.Dst(), "✖"})
+		case dotfile.StateIgnored:
+			t.AppendRow(table.Row{name, dot.Dst(), text.FgYellow.Sprint("Ignored")})
+		case dotfile.StateTargetAlreadyExists:
+			t.AppendRow(table.Row{name, dot.Dst(), text.FgRed.Sprint("Destination dotfile already exists")})
+		}
+	}
 
 	t.Render()
 }

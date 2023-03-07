@@ -10,17 +10,17 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(applyCmd)
+	rootCmd.AddCommand(revokeCmd)
 }
 
-var applyCmd = &cobra.Command{
-	Use:   "apply",
-	Short: "Create symlinks to all dotfiles in `basedir/dots`",
-	Long:  "Create symlinks to all dotfiles in `basedir/dots`",
-	Run:   runApplyCmd,
+var revokeCmd = &cobra.Command{
+	Use:   "revoke",
+	Short: "",
+	Long:  "",
+	Run:   runRevokeCmd,
 }
 
-func runApplyCmd(cmd *cobra.Command, args []string) {
+func runRevokeCmd(cmd *cobra.Command, args []string) {
 	dots := dotfiles.Dotfiles
 	names, err := dotfiles.LocalDotNames()
 	cobra.CheckErr(err)
@@ -35,7 +35,7 @@ func runApplyCmd(cmd *cobra.Command, args []string) {
 			continue
 		}
 
-		err := dot.Apply()
+		err := dot.Revoke()
 		if err != nil {
 			fmt.Printf(text.FgRed.Sprintf("%s: %s\n", name, err.Error()))
 			continue

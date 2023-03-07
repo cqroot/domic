@@ -37,7 +37,7 @@
 ## go
 
 - Linux: `$HOME/.config/go`
-- MacOS: -
+- MacOS: `$HOME/Library/Application Support/go`
 - Windows: `%APPDATA%/go`
 - Doc: go env GOENV
 

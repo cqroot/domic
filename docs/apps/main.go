@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/cqroot/doter/pkg/dotmanager"
+	"github.com/cqroot/doter/pkg/dotfiles"
 	"github.com/cqroot/doter/pkg/path"
 )
 
@@ -20,12 +20,11 @@ func main() {
 	path.ReplaceHomeDir("$HOME")
 	path.ReplaceAppDataDir("%APPDATA%")
 	path.ReplaceLocalAppDataDir("%LOCALAPPDATA%")
-	linuxDotMap := dotmanager.DefaultDotMap("linux")
-	darwinDotMap := dotmanager.DefaultDotMap("darwin")
-	windowsDotMap := dotmanager.DefaultDotMap("windows")
 
-	names := make([]string, 0, len(linuxDotMap))
-	for name := range linuxDotMap {
+	dots := dotfiles.Dotfiles
+
+	names := make([]string, 0, len(dots))
+	for name := range dots {
 		names = append(names, name)
 	}
 	sort.Strings(names)
@@ -34,14 +33,16 @@ func main() {
 	fmt.Println()
 
 	for _, name := range names {
+		dot := dots[name]
+
 		fmt.Printf("## %s\n\n", name)
 
-		fmt.Printf("- Linux: %s\n", formattedDest(linuxDotMap[name].Dest))
-		fmt.Printf("- MacOS: %s\n", formattedDest(darwinDotMap[name].Dest))
-		fmt.Printf("- Windows: %s\n", formattedDest(windowsDotMap[name].Dest))
+		fmt.Printf("- Linux: %s\n", formattedDest(dot.DstFunc("linux")))
+		fmt.Printf("- MacOS: %s\n", formattedDest(dot.DstFunc("darwin")))
+		fmt.Printf("- Windows: %s\n", formattedDest(dot.DstFunc("windows")))
 
-		if linuxDotMap[name].Doc != "" {
-			fmt.Println("- Doc:", linuxDotMap[name].Doc)
+		if dot.Doc != "" {
+			fmt.Println("- Doc:", dot.Doc)
 		}
 		fmt.Println()
 	}
