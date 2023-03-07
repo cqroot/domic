@@ -1,8 +1,6 @@
 package dotfile
 
 import (
-	"fmt"
-
 	"github.com/cqroot/doter/pkg/symlink"
 )
 
@@ -23,7 +21,6 @@ func (dot Dotfile) State() State {
 
 	ok, err := symlink.Check(dot.Src(), dot.Dst())
 	if err != nil {
-		fmt.Println(err)
 		return StateTargetAlreadyExists
 	}
 	if ok {
