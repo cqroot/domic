@@ -11,6 +11,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
+	"github.com/cqroot/doter/pkg/dotfile"
 	"github.com/cqroot/doter/pkg/dotfiles"
 	"github.com/cqroot/doter/pkg/path"
 )
@@ -97,6 +98,10 @@ func PrintInitGuide() {
 	)
 
 	for _, dot := range dotfiles.Dotfiles {
+		if dot.State() == dotfile.StateApplied {
+			continue
+		}
+
 		_, err := os.Stat(dot.Dst())
 		if err != nil {
 			continue
