@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
 	"github.com/cqroot/doter/pkg/dotfiles"
@@ -37,68 +37,7 @@ func runInitCmd(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	fmt.Println(`
-  # Execute the following command to initialize your dotfiles repository
-  # Before executing each command, you should make sure that the command is ok.`)
-	fmt.Println()
-	fmt.Println("  mkdir -p", strconv.Quote(strings.ReplaceAll(path.DotsDir(), "\\", "/")))
-
-	t := table.NewWriter()
-	t.SetStyle(table.Style{
-		Box: table.BoxStyle{
-			BottomLeft:       " ",
-			BottomRight:      " ",
-			BottomSeparator:  " ",
-			Left:             " ",
-			LeftSeparator:    " ",
-			MiddleHorizontal: " ",
-			MiddleSeparator:  " ",
-			MiddleVertical:   " ",
-			PaddingLeft:      " ",
-			PaddingRight:     "",
-			PageSeparator:    "\n",
-			Right:            " ",
-			RightSeparator:   " ",
-			TopLeft:          " ",
-			TopRight:         " ",
-			TopSeparator:     " ",
-			UnfinishedRow:    " ",
-		},
-		Options: table.Options{
-			DrawBorder:      true,
-			SeparateColumns: true,
-			SeparateFooter:  true,
-			SeparateHeader:  true,
-			SeparateRows:    false,
-		},
-	})
-	t.SetOutputMirror(os.Stdout)
-
-	for _, dot := range dotfiles.Dotfiles {
-		_, err := os.Stat(dot.Dst())
-		if err != nil {
-			continue
-		}
-
-		dotPath := dot.Src()
-		if strings.HasPrefix(filepath.Base(dotPath), ".") {
-			dotPath = filepath.Join(filepath.Dir(dotPath), filepath.Base(dotPath)[1:])
-		}
-
-		if strings.Contains(dot.RelSrc, "/") {
-			fmt.Println("  mkdir -p", strconv.Quote(strings.ReplaceAll(filepath.Dir(dotPath), "\\", "/")))
-		}
-
-		t.AppendRow(table.Row{
-			"mv", strconv.Quote(dot.Dst()),
-			strconv.Quote(strings.ReplaceAll(dotPath, "\\", "/")),
-		})
-	}
-
-	t.Render()
-
-	fmt.Println("  cd", strconv.Quote(strings.ReplaceAll(path.BaseDir(), "\\", "/")))
-	fmt.Println()
+	PrintInitGuide()
 }
 
 func GitClone(repo string) {
@@ -143,4 +82,49 @@ func ExecCmd(name string, arg ...string) error {
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	return err
+}
+
+func PrintInitGuide() {
+	fmt.Print(`
+  # Execute the following command to initialize your dotfiles repository
+  # Before executing each command, you should make sure that the command is ok.
+
+`)
+	fmt.Print(
+		text.FgYellow.Sprint("  mkdir -p "),
+		text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(path.DotsDir(), "\\", "/"))),
+		"\n\n",
+	)
+
+	for _, dot := range dotfiles.Dotfiles {
+		_, err := os.Stat(dot.Dst())
+		if err != nil {
+			continue
+		}
+
+		dotPath := dot.Src()
+		if strings.HasPrefix(filepath.Base(dotPath), ".") {
+			dotPath = filepath.Join(filepath.Dir(dotPath), filepath.Base(dotPath)[1:])
+		}
+
+		if strings.Contains(dot.RelSrc, "/") {
+			fmt.Print(
+				text.FgYellow.Sprint("  mkdir -p "),
+				text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(filepath.Dir(dotPath), "\\", "/"))),
+				text.FgYellow.Sprint(" && \\\n"),
+			)
+		}
+		fmt.Println(
+			text.FgYellow.Sprint("  mv"),
+			text.FgGreen.Sprintf("%-50s", strconv.Quote(dot.Dst())),
+			text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(dotPath, "\\", "/"))),
+		)
+
+	}
+
+	fmt.Print(
+		text.FgYellow.Sprint("\n  cd "),
+		text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(path.BaseDir(), "\\", "/"))),
+		"\n\n",
+	)
 }
