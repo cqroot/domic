@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/doter/pkg/path"
+	"github.com/cqroot/doter/pkg/stdpath"
 )
 
 func init() {
@@ -22,7 +22,7 @@ func runUpdateCmd(cmd *cobra.Command, args []string) {
 }
 
 func GitPull() {
-	repoDir := path.BaseDir()
+	repoDir := stdpath.BaseDir()
 
 	gitArgs := []string{"-C", repoDir, "pull"}
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/doter/pkg/path"
+	"github.com/cqroot/doter/pkg/stdpath"
 )
 
 func init() {
@@ -21,5 +21,5 @@ var basedirCmd = &cobra.Command{
 }
 
 func runBasedirCmd(cmd *cobra.Command, args []string) {
-	fmt.Println(strings.ReplaceAll(path.BaseDir(), "\\", "/"))
+	fmt.Println(strings.ReplaceAll(stdpath.BaseDir(), "\\", "/"))
 }

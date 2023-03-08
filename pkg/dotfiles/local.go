@@ -3,11 +3,11 @@ package dotfiles
 import (
 	"os"
 
-	"github.com/cqroot/doter/pkg/path"
+	"github.com/cqroot/doter/pkg/stdpath"
 )
 
 func LocalDotNames() ([]string, error) {
-	files, err := os.ReadDir(path.DotsDir())
+	files, err := os.ReadDir(stdpath.DotsDir())
 	if err != nil {
 		return nil, err
 	}

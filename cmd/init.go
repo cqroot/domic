@@ -13,7 +13,7 @@ import (
 
 	"github.com/cqroot/doter/pkg/dotfile"
 	"github.com/cqroot/doter/pkg/dotfiles"
-	"github.com/cqroot/doter/pkg/path"
+	"github.com/cqroot/doter/pkg/stdpath"
 )
 
 var initEnableSsh bool
@@ -58,7 +58,7 @@ func GitClone(repo string) {
 		}
 	}
 
-	repoDir := path.BaseDir()
+	repoDir := stdpath.BaseDir()
 
 	_, err := os.Stat(repoDir)
 	if err != nil {
@@ -93,7 +93,7 @@ func PrintInitGuide() {
 `)
 	fmt.Print(
 		text.FgYellow.Sprint("  mkdir -p "),
-		text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(path.DotsDir(), "\\", "/"))),
+		text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(stdpath.DotsDir(), "\\", "/"))),
 		"\n\n",
 	)
 
@@ -129,7 +129,7 @@ func PrintInitGuide() {
 
 	fmt.Print(
 		text.FgYellow.Sprint("\n  cd "),
-		text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(path.BaseDir(), "\\", "/"))),
+		text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(stdpath.BaseDir(), "\\", "/"))),
 		"\n\n",
 	)
 }

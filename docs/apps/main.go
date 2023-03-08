@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/cqroot/doter/pkg/dotfiles"
-	"github.com/cqroot/doter/pkg/path"
+	"github.com/cqroot/doter/pkg/stdpath"
 )
 
 func formattedDest(dest string) string {
@@ -17,9 +17,7 @@ func formattedDest(dest string) string {
 }
 
 func main() {
-	path.ReplaceHomeDir("$HOME")
-	path.ReplaceAppDataDir("%APPDATA%")
-	path.ReplaceLocalAppDataDir("%LOCALAPPDATA%")
+	stdpath.DebugMode = true
 
 	dots := dotfiles.Dotfiles
 

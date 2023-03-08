@@ -1,31 +1,15 @@
-package path
+package stdpath
 
 import (
 	"os"
 	"path/filepath"
 )
 
-var (
-	replacedHomeDir         string = ""
-	replacedAppDataDir      string = ""
-	replacedLocalAppDataDir string = ""
-)
-
-func ReplaceHomeDir(homeDir string) {
-	replacedHomeDir = homeDir
-}
-
-func ReplaceAppDataDir(AppDataDir string) {
-	replacedAppDataDir = AppDataDir
-}
-
-func ReplaceLocalAppDataDir(LocalAppDataDir string) {
-	replacedLocalAppDataDir = LocalAppDataDir
-}
+var DebugMode = false
 
 func HomeDir() string {
-	if replacedHomeDir != "" {
-		return replacedHomeDir
+	if DebugMode {
+		return "$HOME"
 	}
 
 	homeDir, err := os.UserHomeDir()
@@ -61,8 +45,8 @@ func ApplicationSupportPath(path string) string {
 // %APPDATA%/{path}
 func WindowsAppDataPath(path string) string {
 	appDataDir := os.Getenv("APPDATA")
-	if replacedAppDataDir != "" {
-		appDataDir = replacedAppDataDir
+	if DebugMode {
+		appDataDir = "%APPDATA%"
 	}
 	return filepath.Join(appDataDir, path)
 }
@@ -70,8 +54,8 @@ func WindowsAppDataPath(path string) string {
 // %LOCALAPPDATA%/{path}
 func WindowsLocalAppDataPath(path string) string {
 	localAppDataDir := os.Getenv("LOCALAPPDATA")
-	if replacedLocalAppDataDir != "" {
-		localAppDataDir = replacedLocalAppDataDir
+	if DebugMode {
+		localAppDataDir = "%LOCALAPPDATA%"
 	}
 	return filepath.Join(localAppDataDir, path)
 }

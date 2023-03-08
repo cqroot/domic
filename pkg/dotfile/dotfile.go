@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/cqroot/doter/pkg/path"
+	"github.com/cqroot/doter/pkg/stdpath"
 )
 
 type Dotfile struct {
@@ -17,7 +17,7 @@ type Dotfile struct {
 }
 
 func (dot Dotfile) Src() string {
-	src := filepath.Join(path.DotsDir(), dot.RelSrc)
+	src := filepath.Join(stdpath.DotsDir(), dot.RelSrc)
 	return strings.ReplaceAll(src, "\\", "/")
 }
 

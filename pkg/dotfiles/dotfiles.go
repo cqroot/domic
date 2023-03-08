@@ -5,7 +5,7 @@ import (
 	"runtime"
 
 	"github.com/cqroot/doter/pkg/dotfile"
-	"github.com/cqroot/doter/pkg/path"
+	"github.com/cqroot/doter/pkg/stdpath"
 )
 
 var Dotfiles = map[string]dotfile.Dotfile{
@@ -15,13 +15,13 @@ var Dotfiles = map[string]dotfile.Dotfile{
 	"bash": {
 		Exec:    "bash",
 		RelSrc:  "bash",
-		DstFunc: func(string) string { return path.DotConfigPath("bash") },
+		DstFunc: func(string) string { return stdpath.DotConfigPath("bash") },
 		Doc:     "You can put some bash files in this directory and source them in `.bashrc`.",
 	},
 
 	"bin": {
 		RelSrc:  "bin",
-		DstFunc: func(string) string { return path.HomeDotPath("bin") },
+		DstFunc: func(string) string { return stdpath.HomeDotPath("bin") },
 		Doc:     "You can put some executable scripts in this directory.",
 	},
 
@@ -34,9 +34,9 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux", "darwin":
-				return path.DotConfigPath("alacritty")
+				return stdpath.DotConfigPath("alacritty")
 			case "windows":
-				return path.WindowsAppDataPath("alacritty")
+				return stdpath.WindowsAppDataPath("alacritty")
 			}
 			return ""
 		},
@@ -49,7 +49,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux":
-				return path.DotConfigPath("dunst")
+				return stdpath.DotConfigPath("dunst")
 			}
 			return ""
 		},
@@ -61,7 +61,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux":
-				return path.DotConfigPath("fontconfig")
+				return stdpath.DotConfigPath("fontconfig")
 			}
 			return ""
 		},
@@ -71,7 +71,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 	"git": {
 		Exec:    "git",
 		RelSrc:  "git",
-		DstFunc: func(string) string { return path.DotConfigPath("git") },
+		DstFunc: func(string) string { return stdpath.DotConfigPath("git") },
 	},
 
 	"gitui": {
@@ -80,9 +80,9 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux", "darwin":
-				return path.DotConfigPath("gitui")
+				return stdpath.DotConfigPath("gitui")
 			case "windows":
-				return path.WindowsAppDataPath("gitui")
+				return stdpath.WindowsAppDataPath("gitui")
 			}
 			return ""
 		},
@@ -95,11 +95,11 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux":
-				return path.DotConfigPath("go")
+				return stdpath.DotConfigPath("go")
 			case "darwin":
-				return path.ApplicationSupportPath("go")
+				return stdpath.ApplicationSupportPath("go")
 			case "windows":
-				return path.WindowsAppDataPath("go")
+				return stdpath.WindowsAppDataPath("go")
 			}
 			return ""
 		},
@@ -112,7 +112,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux":
-				return path.DotConfigPath("i3")
+				return stdpath.DotConfigPath("i3")
 			}
 			return ""
 		},
@@ -131,7 +131,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		}(),
 		RelSrc: "joplin-desktop",
 		DstFunc: func(goos string) string {
-			return path.DotConfigPath("joplin-desktop")
+			return stdpath.DotConfigPath("joplin-desktop")
 		},
 	},
 
@@ -141,9 +141,9 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux", "darwin":
-				return path.DotConfigPath("lf")
+				return stdpath.DotConfigPath("lf")
 			case "windows":
-				return path.WindowsLocalAppDataPath("lf")
+				return stdpath.WindowsLocalAppDataPath("lf")
 			}
 			return ""
 		},
@@ -156,9 +156,9 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux", "darwin":
-				return path.DotConfigPath("mpv")
+				return stdpath.DotConfigPath("mpv")
 			case "windows":
-				return path.WindowsAppDataPath("mpv")
+				return stdpath.WindowsAppDataPath("mpv")
 			}
 			return ""
 		},
@@ -171,7 +171,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "windows":
-				return path.WindowsAppDataPath("nushell")
+				return stdpath.WindowsAppDataPath("nushell")
 			}
 			return ""
 		},
@@ -184,9 +184,9 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux", "darwin":
-				return path.DotConfigPath("nvim")
+				return stdpath.DotConfigPath("nvim")
 			case "windows":
-				return path.WindowsLocalAppDataPath("nvim")
+				return stdpath.WindowsLocalAppDataPath("nvim")
 			}
 			return ""
 		},
@@ -199,7 +199,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux":
-				return path.DotConfigPath("picom")
+				return stdpath.DotConfigPath("picom")
 			}
 			return ""
 		},
@@ -211,11 +211,11 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux":
-				return path.DotConfigPath("pip/pip.conf")
+				return stdpath.DotConfigPath("pip/pip.conf")
 			case "darwin":
-				return path.DotConfigPath("pip/pip.conf") // `$HOME/Library/Application Support/pip/pip.conf` is not supported.
+				return stdpath.DotConfigPath("pip/pip.conf") // `$HOME/Library/Application Support/pip/pip.conf` is not supported.
 			case "windows":
-				return path.WindowsAppDataPath("pip/pip.ini")
+				return stdpath.WindowsAppDataPath("pip/pip.ini")
 			}
 			return ""
 		},
@@ -228,7 +228,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux":
-				return path.DotConfigPath("polybar")
+				return stdpath.DotConfigPath("polybar")
 			}
 			return ""
 		},
@@ -241,9 +241,9 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux", "darwin":
-				return path.DotConfigPath("powershell")
+				return stdpath.DotConfigPath("powershell")
 			case "windows":
-				return filepath.Join(path.HomeDir(), "Documents/PowerShell")
+				return filepath.Join(stdpath.HomeDir(), "Documents/PowerShell")
 			}
 			return ""
 		},
@@ -256,7 +256,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux":
-				return path.DotConfigPath("rofi")
+				return stdpath.DotConfigPath("rofi")
 			}
 			return ""
 		},
@@ -266,13 +266,13 @@ var Dotfiles = map[string]dotfile.Dotfile{
 	"sqlite": {
 		Exec:    "sqlite3",
 		RelSrc:  "sqlite/sqliterc",
-		DstFunc: func(string) string { return filepath.Join(path.HomeDir(), ".sqliterc") },
+		DstFunc: func(string) string { return filepath.Join(stdpath.HomeDir(), ".sqliterc") },
 	},
 
 	"starship": {
 		Exec:    "starship",
 		RelSrc:  "starship/starship.toml",
-		DstFunc: func(string) string { return path.DotConfigPath("starship.toml") },
+		DstFunc: func(string) string { return stdpath.DotConfigPath("starship.toml") },
 		Doc:     "https://starship.rs/config/#configuration",
 	},
 
@@ -282,7 +282,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		DstFunc: func(goos string) string {
 			switch goos {
 			case "linux", "darwin":
-				return path.DotConfigPath("tmux")
+				return stdpath.DotConfigPath("tmux")
 			}
 			return ""
 		},
@@ -292,7 +292,7 @@ var Dotfiles = map[string]dotfile.Dotfile{
 	"wezterm": {
 		Exec:    "wezterm",
 		RelSrc:  "wezterm",
-		DstFunc: func(string) string { return path.DotConfigPath("wezterm") },
+		DstFunc: func(string) string { return stdpath.DotConfigPath("wezterm") },
 		Doc:     "https://wezfurlong.org/wezterm/config/files.html",
 	},
 }
