@@ -110,6 +110,13 @@
 - Windows: `$HOME/Documents/PowerShell`
 - Doc: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.3#the-profile-files
 
+## rofi
+
+- Linux: `$HOME/.config/rofi`
+- MacOS: -
+- Windows: -
+- Doc: https://github.com/davatorium/rofi#configuration
+
 ## sqlite
 
 - Linux: `$HOME/.sqliterc`

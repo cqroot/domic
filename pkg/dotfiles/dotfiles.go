@@ -221,6 +221,19 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7.3#the-profile-files",
 	},
 
+	"rofi": {
+		Exec:   "rofi",
+		RelSrc: "rofi",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux":
+				return path.DotConfigPath("rofi")
+			}
+			return ""
+		},
+		Doc: "https://github.com/davatorium/rofi#configuration",
+	},
+
 	"sqlite": {
 		Exec:    "sqlite3",
 		RelSrc:  "sqlite/sqliterc",
