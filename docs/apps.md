@@ -76,6 +76,12 @@
 - Windows: `%LOCALAPPDATA%/nvim`
 - Doc: https://neovim.io/doc/user/starting.html#standard-path
 
+## picom
+
+- Linux: `$HOME/.config/picom`
+- MacOS: -
+- Windows: -
+
 ## pip
 
 - Linux: `$HOME/.config/pip/pip.conf`

@@ -151,6 +151,18 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "https://neovim.io/doc/user/starting.html#standard-path",
 	},
 
+	"picom": {
+		Exec:   "picom",
+		RelSrc: "picom",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux":
+				return path.DotConfigPath("picom")
+			}
+			return ""
+		},
+	},
+
 	"pip": {
 		Exec:   "pip",
 		RelSrc: "pip/pip.conf",
