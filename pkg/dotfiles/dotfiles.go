@@ -2,6 +2,7 @@ package dotfiles
 
 import (
 	"path/filepath"
+	"runtime"
 
 	"github.com/cqroot/doter/pkg/dotfile"
 	"github.com/cqroot/doter/pkg/path"
@@ -104,6 +105,22 @@ var Dotfiles = map[string]dotfile.Dotfile{
 			return ""
 		},
 		Doc: "https://i3wm.org/docs/userguide.html#configuring",
+	},
+
+	"joplin-desktop": {
+		Exec: func() string {
+			switch runtime.GOOS {
+			case "linux":
+				return "joplin-desktop"
+			case "windows":
+				return "joplin"
+			}
+			return ""
+		}(),
+		RelSrc: "joplin-desktop",
+		DstFunc: func(goos string) string {
+			return path.DotConfigPath("joplin-desktop")
+		},
 	},
 
 	"lf": {

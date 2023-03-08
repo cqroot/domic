@@ -55,6 +55,12 @@
 - Windows: -
 - Doc: https://i3wm.org/docs/userguide.html#configuring
 
+## joplin-desktop
+
+- Linux: `$HOME/.config/joplin-desktop`
+- MacOS: `$HOME/.config/joplin-desktop`
+- Windows: `$HOME/.config/joplin-desktop`
+
 ## lf
 
 - Linux: `$HOME/.config/lf`
