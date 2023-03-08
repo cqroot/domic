@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/cqroot/doter/pkg/dotfile"
-	"github.com/cqroot/doter/pkg/stdpath"
+	"github.com/cqroot/domic/pkg/dotfile"
+	"github.com/cqroot/domic/pkg/stdpath"
 )
 
 var Dotfiles = map[string]dotfile.Dotfile{

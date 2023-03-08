@@ -1,7 +1,7 @@
 package dotfile
 
 import (
-	"github.com/cqroot/doter/pkg/symlink"
+	"github.com/cqroot/domic/pkg/symlink"
 )
 
 type State int

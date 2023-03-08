@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/cqroot/doter/cmd"
+	"github.com/cqroot/domic/cmd"
 )
 
 func main() {

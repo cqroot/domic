@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/cqroot/doter/pkg/stdpath"
+	"github.com/cqroot/domic/pkg/stdpath"
 )
 
 type Dotfile struct {

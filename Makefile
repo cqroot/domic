@@ -1,4 +1,4 @@
-PROJ_NAME=doter
+PROJ_NAME=domic
 BUILD_DIR=$(CURDIR)/.build
 
 .PHONY: build

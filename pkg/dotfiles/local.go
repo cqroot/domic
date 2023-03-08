@@ -3,7 +3,7 @@ package dotfiles
 import (
 	"os"
 
-	"github.com/cqroot/doter/pkg/stdpath"
+	"github.com/cqroot/domic/pkg/stdpath"
 )
 
 func LocalDotNames() ([]string, error) {

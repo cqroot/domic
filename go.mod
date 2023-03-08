@@ -1,4 +1,4 @@
-module github.com/cqroot/doter
+module github.com/cqroot/domic
 
 go 1.20
 

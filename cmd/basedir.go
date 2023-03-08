@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/doter/pkg/stdpath"
+	"github.com/cqroot/domic/pkg/stdpath"
 )
 
 func init() {

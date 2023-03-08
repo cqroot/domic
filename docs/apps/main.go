@@ -5,8 +5,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/cqroot/doter/pkg/dotfiles"
-	"github.com/cqroot/doter/pkg/stdpath"
+	"github.com/cqroot/domic/pkg/dotfiles"
+	"github.com/cqroot/domic/pkg/stdpath"
 )
 
 func formattedDest(dest string) string {

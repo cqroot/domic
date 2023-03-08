@@ -6,8 +6,8 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/doter/pkg/dotfile"
-	"github.com/cqroot/doter/pkg/dotfiles"
+	"github.com/cqroot/domic/pkg/dotfile"
+	"github.com/cqroot/domic/pkg/dotfiles"
 )
 
 func init() {

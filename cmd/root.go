@@ -7,15 +7,15 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/cqroot/doter/pkg/dotfile"
-	"github.com/cqroot/doter/pkg/dotfiles"
+	"github.com/cqroot/domic/pkg/dotfile"
+	"github.com/cqroot/domic/pkg/dotfiles"
 )
 
 var (
 	rootFlagAll     bool
 	rootFlagIgnored bool
 	rootCmd         = &cobra.Command{
-		Use:   "doter",
+		Use:   "domic",
 		Short: "Manage your dotfiles more easily.",
 		Long:  "Manage your dotfiles more easily.",
 		Run:   runRootCmd,
