@@ -110,6 +110,19 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "https://mpv.io/manual/stable/#configuration-files",
 	},
 
+	"nushell": {
+		Exec:   "nushell",
+		RelSrc: "nushell",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "windows":
+				return path.WindowsAppDataPath("nushell")
+			}
+			return ""
+		},
+		Doc: "https://www.nushell.sh/book/configuration.html",
+	},
+
 	"nvim": {
 		Exec:   "nvim",
 		RelSrc: "nvim",
