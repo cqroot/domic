@@ -21,6 +21,13 @@
 - Windows: `$HOME/.bin`
 - Doc: You can put some executable scripts in this directory.
 
+## dunst
+
+- Linux: `$HOME/.config/dunst`
+- MacOS: -
+- Windows: -
+- Doc: https://github.com/dunst-project/dunst/wiki#getting-started
+
 ## git
 
 - Linux: `$HOME/.config/git`

@@ -42,6 +42,19 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "https://github.com/alacritty/alacritty#configuration",
 	},
 
+	"dunst": {
+		Exec:   "dunst",
+		RelSrc: "dunst",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux":
+				return path.DotConfigPath("dunst")
+			}
+			return ""
+		},
+		Doc: "https://github.com/dunst-project/dunst/wiki#getting-started",
+	},
+
 	"git": {
 		Exec:    "git",
 		RelSrc:  "git",
