@@ -11,11 +11,20 @@ import (
 	"github.com/cqroot/doter/pkg/dotfiles"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "doter",
-	Short: "Dotfiles Manager for Gopher",
-	Long:  "Dotfiles Manager for Gopher",
-	Run:   runRootCmd,
+var (
+	rootFlagAll     bool
+	rootFlagIgnored bool
+	rootCmd         = &cobra.Command{
+		Use:   "doter",
+		Short: "Manage your dotfiles more easily.",
+		Long:  "Manage your dotfiles more easily.",
+		Run:   runRootCmd,
+	}
+)
+
+func init() {
+	rootCmd.Flags().BoolVarP(&rootFlagAll, "all", "a", false, "show all dotfiles")
+	rootCmd.Flags().BoolVarP(&rootFlagIgnored, "ignored", "i", false, "show ignored dotfiles")
 }
 
 func printStatus() {
@@ -30,12 +39,27 @@ func printStatus() {
 	dotfiles.ForEach(names, func(name string, dot dotfile.Dotfile) {
 		switch dot.State() {
 		case dotfile.StateApplied:
+			if rootFlagIgnored {
+				return
+			}
 			t.AppendRow(table.Row{name, dot.Dst(), text.FgGreen.Sprint("✔")})
+
 		case dotfile.StateUnapplied:
+			if rootFlagIgnored {
+				return
+			}
 			t.AppendRow(table.Row{name, dot.Dst(), "✖"})
+
 		case dotfile.StateIgnored:
+			if !rootFlagIgnored && !rootFlagAll {
+				return
+			}
 			t.AppendRow(table.Row{name, dot.Dst(), text.FgYellow.Sprint("Ignored")})
+
 		case dotfile.StateTargetAlreadyExists:
+			if rootFlagIgnored {
+				return
+			}
 			t.AppendRow(table.Row{name, dot.Dst(), text.FgRed.Sprint("Destination dotfile already exists")})
 		}
 	})
