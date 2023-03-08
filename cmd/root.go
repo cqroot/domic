@@ -19,21 +19,15 @@ var rootCmd = &cobra.Command{
 }
 
 func printStatus() {
-	dots := dotfiles.Dotfiles
-	names, err := dotfiles.LocalDotNames()
-	cobra.CheckErr(err)
-
 	t := table.NewWriter()
 	t.SetStyle(table.StyleRounded)
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Dot", "Dst", "Status"})
 
-	for _, name := range names {
-		dot, ok := dots[name]
-		if !ok {
-			continue
-		}
+	names, err := dotfiles.LocalDotNames()
+	cobra.CheckErr(err)
 
+	dotfiles.ForEach(names, func(name string, dot dotfile.Dotfile) {
 		switch dot.State() {
 		case dotfile.StateApplied:
 			t.AppendRow(table.Row{name, dot.Dst(), text.FgGreen.Sprint("✔")})
@@ -44,7 +38,7 @@ func printStatus() {
 		case dotfile.StateTargetAlreadyExists:
 			t.AppendRow(table.Row{name, dot.Dst(), text.FgRed.Sprint("Destination dotfile already exists")})
 		}
-	}
+	})
 
 	t.Render()
 }

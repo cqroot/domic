@@ -6,6 +6,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
+	"github.com/cqroot/doter/pkg/dotfile"
 	"github.com/cqroot/doter/pkg/dotfiles"
 )
 
@@ -21,24 +22,17 @@ var applyCmd = &cobra.Command{
 }
 
 func runApplyCmd(cmd *cobra.Command, args []string) {
-	dots := dotfiles.Dotfiles
 	names, err := dotfiles.LocalDotNames()
 	cobra.CheckErr(err)
 
-	for _, name := range names {
-		dot, ok := dots[name]
-		if !ok {
-			continue
-		}
-
+	dotfiles.ForEach(names, func(name string, dot dotfile.Dotfile) {
 		if dot.IsIgnored() {
-			continue
+			return
 		}
 
 		err := dot.Apply()
 		if err != nil {
 			fmt.Print(text.FgRed.Sprintf("%s: %s\n", name, err.Error()))
-			continue
 		}
-	}
+	})
 }
