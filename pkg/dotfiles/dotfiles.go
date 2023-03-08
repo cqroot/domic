@@ -43,6 +43,19 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "https://github.com/alacritty/alacritty#configuration",
 	},
 
+	"awesome": {
+		Exec:   "awesome",
+		RelSrc: "awesome",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux":
+				return stdpath.DotConfigPath("awesome")
+			}
+			return ""
+		},
+		Doc: "https://awesomewm.org/doc/api/documentation/07-my-first-awesome.md.html",
+	},
+
 	"dunst": {
 		Exec:   "dunst",
 		RelSrc: "dunst",

@@ -7,6 +7,13 @@
 - Windows: `%APPDATA%/alacritty`
 - Doc: https://github.com/alacritty/alacritty#configuration
 
+## awesome
+
+- Linux: `$HOME/.config/awesome`
+- MacOS: -
+- Windows: -
+- Doc: https://awesomewm.org/doc/api/documentation/07-my-first-awesome.md.html
+
 ## bash
 
 - Linux: `$HOME/.config/bash`
