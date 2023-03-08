@@ -28,6 +28,13 @@
 - Windows: -
 - Doc: https://github.com/dunst-project/dunst/wiki#getting-started
 
+## fontconfig
+
+- Linux: `$HOME/.config/fontconfig`
+- MacOS: -
+- Windows: -
+- Doc: https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
+
 ## git
 
 - Linux: `$HOME/.config/git`

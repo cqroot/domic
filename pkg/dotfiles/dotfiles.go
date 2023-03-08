@@ -56,6 +56,18 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "https://github.com/dunst-project/dunst/wiki#getting-started",
 	},
 
+	"fontconfig": {
+		RelSrc: "fontconfig",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux":
+				return path.DotConfigPath("fontconfig")
+			}
+			return ""
+		},
+		Doc: "https://www.freedesktop.org/software/fontconfig/fontconfig-user.html",
+	},
+
 	"git": {
 		Exec:    "git",
 		RelSrc:  "git",
