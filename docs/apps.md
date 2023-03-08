@@ -28,6 +28,13 @@
 - Windows: `$HOME/.bin`
 - Doc: You can put some executable scripts in this directory.
 
+## bspwm
+
+- Linux: `$HOME/.config/bspwm`
+- MacOS: -
+- Windows: -
+- Doc: https://github.com/baskerville/bspwm#configuration
+
 ## dunst
 
 - Linux: `$HOME/.config/dunst`

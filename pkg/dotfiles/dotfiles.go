@@ -56,6 +56,19 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "https://awesomewm.org/doc/api/documentation/07-my-first-awesome.md.html",
 	},
 
+	"bspwm": {
+		Exec:   "bspwm",
+		RelSrc: "bspwm",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux":
+				return stdpath.DotConfigPath("bspwm")
+			}
+			return ""
+		},
+		Doc: "https://github.com/baskerville/bspwm#configuration",
+	},
+
 	"dunst": {
 		Exec:   "dunst",
 		RelSrc: "dunst",
