@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/jedib0t/go-pretty/v6 v6.4.6
-	github.com/otiai10/copy v1.9.0
 	github.com/spf13/cobra v1.6.1
 )
 
