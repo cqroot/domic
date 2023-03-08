@@ -168,6 +168,19 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "https://pip.pypa.io/en/stable/topics/configuration/#location",
 	},
 
+	"polybar": {
+		Exec:   "polybar",
+		RelSrc: "polybar",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux":
+				return path.DotConfigPath("polybar")
+			}
+			return ""
+		},
+		Doc: "https://github.com/polybar/polybar/wiki#where-to-start",
+	},
+
 	"powershell": {
 		Exec:   "pwsh",
 		RelSrc: "powershell",

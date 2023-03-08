@@ -83,6 +83,13 @@
 - Windows: `%APPDATA%/pip/pip.ini`
 - Doc: https://pip.pypa.io/en/stable/topics/configuration/#location
 
+## polybar
+
+- Linux: `$HOME/.config/polybar`
+- MacOS: -
+- Windows: -
+- Doc: https://github.com/polybar/polybar/wiki#where-to-start
+
 ## powershell
 
 - Linux: `$HOME/.config/powershell`
