@@ -136,6 +136,13 @@
 - Windows: `$HOME/.config/starship.toml`
 - Doc: https://starship.rs/config/#configuration
 
+## tmux
+
+- Linux: `$HOME/.config/tmux`
+- MacOS: `$HOME/.config/tmux`
+- Windows: -
+- Doc: https://github.com/tmux/tmux/blob/master/tmux.1#L146
+
 ## wezterm
 
 - Linux: `$HOME/.config/wezterm`

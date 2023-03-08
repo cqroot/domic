@@ -264,6 +264,19 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc:     "https://starship.rs/config/#configuration",
 	},
 
+	"tmux": {
+		Exec:   "tmux",
+		RelSrc: "tmux",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux", "darwin":
+				return path.DotConfigPath("tmux")
+			}
+			return ""
+		},
+		Doc: "https://github.com/tmux/tmux/blob/master/tmux.1#L146",
+	},
+
 	"wezterm": {
 		Exec:    "wezterm",
 		RelSrc:  "wezterm",
