@@ -41,6 +41,13 @@
 - Windows: `%APPDATA%/go`
 - Doc: go env GOENV
 
+## i3
+
+- Linux: `$HOME/.config/i3`
+- MacOS: -
+- Windows: -
+- Doc: https://i3wm.org/docs/userguide.html#configuring
+
 ## lf
 
 - Linux: `$HOME/.config/lf`
@@ -54,6 +61,13 @@
 - MacOS: `$HOME/.config/mpv`
 - Windows: `%APPDATA%/mpv`
 - Doc: https://mpv.io/manual/stable/#configuration-files
+
+## nushell
+
+- Linux: -
+- MacOS: -
+- Windows: `%APPDATA%/nushell`
+- Doc: https://www.nushell.sh/book/configuration.html
 
 ## nvim
 

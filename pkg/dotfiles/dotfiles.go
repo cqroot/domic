@@ -80,6 +80,19 @@ var Dotfiles = map[string]dotfile.Dotfile{
 		Doc: "go env GOENV",
 	},
 
+	"i3": {
+		Exec:   "i3",
+		RelSrc: "i3",
+		DstFunc: func(goos string) string {
+			switch goos {
+			case "linux":
+				return path.DotConfigPath("i3")
+			}
+			return ""
+		},
+		Doc: "https://i3wm.org/docs/userguide.html#configuring",
+	},
+
 	"lf": {
 		Exec:   "lf",
 		RelSrc: "lf",
