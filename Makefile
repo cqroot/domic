@@ -24,7 +24,7 @@ test:
 
 .PHONY: docs
 docs:
-	go run $(CURDIR)/docs/apps/main.go > $(CURDIR)/docs/apps.md
+	go run $(CURDIR)/docs/apps/main.go > $(CURDIR)/docs/supported_applications.md
 
 .PHONY: check
 check:
