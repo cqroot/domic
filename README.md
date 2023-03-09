@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Domic</h1>
+  <h1>~/.Domic</h1>
 
   <p><i>Manage your <b>dotfiles</b> more easily.</i></p>
 
