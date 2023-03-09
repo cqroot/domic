@@ -94,16 +94,20 @@ func ExecCmd(name string, arg ...string) error {
 }
 
 func PrintInitGuide() {
-	fmt.Print(`
+	hasDotfiles := false
+
+	printPrefix := func() {
+		fmt.Print(`
   # Execute the following command to initialize your dotfiles repository
   # Before executing each command, you should make sure that the command is ok.
 
 `)
-	fmt.Print(
-		text.FgYellow.Sprint("  mkdir -p "),
-		text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(stdpath.DotsDir(), "\\", "/"))),
-		"\n\n",
-	)
+		fmt.Print(
+			text.FgYellow.Sprint("  mkdir -p "),
+			text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(stdpath.DotsDir(), "\\", "/"))),
+			"\n\n",
+		)
+	}
 
 	for _, dot := range dotfiles.Dotfiles {
 		if dot.State() == dotfile.StateApplied {
@@ -118,6 +122,11 @@ func PrintInitGuide() {
 		dotPath := dot.Src()
 		if strings.HasPrefix(filepath.Base(dotPath), ".") {
 			dotPath = filepath.Join(filepath.Dir(dotPath), filepath.Base(dotPath)[1:])
+		}
+
+		if !hasDotfiles {
+			hasDotfiles = true
+			printPrefix()
 		}
 
 		if strings.Contains(dot.RelSrc, "/") {
@@ -135,9 +144,14 @@ func PrintInitGuide() {
 
 	}
 
-	fmt.Print(
-		text.FgYellow.Sprint("\n  cd "),
-		text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(stdpath.BaseDir(), "\\", "/"))),
-		"\n\n",
-	)
+	if hasDotfiles {
+		fmt.Print(
+			text.FgYellow.Sprint("\n  cd "),
+			text.FgGreen.Sprint(strconv.Quote(strings.ReplaceAll(stdpath.BaseDir(), "\\", "/"))),
+			"\n\n",
+		)
+	} else {
+		fmt.Println(text.FgRed.Sprint(`No manageable dotfiles detected.
+You can view supported applications at https://github.com/cqroot/domic/blob/main/docs/supported_applications.md`))
+	}
 }
