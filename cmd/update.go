@@ -12,8 +12,8 @@ func init() {
 
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "",
-	Long:  "",
+	Short: "Update the local dotfiles repository",
+	Long:  "Update the local dotfiles repository",
 	Run:   runUpdateCmd,
 }
 

@@ -15,8 +15,8 @@ func init() {
 
 var basedirCmd = &cobra.Command{
 	Use:   "basedir",
-	Short: "",
-	Long:  "",
+	Short: "Print the dotfile base directory of Domic",
+	Long:  "Print the dotfile base directory of Domic",
 	Run:   runBasedirCmd,
 }
 

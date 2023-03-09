@@ -26,10 +26,18 @@ func init() {
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "",
-	Long:  "",
-	Args:  cobra.MatchAll(cobra.RangeArgs(0, 1), cobra.OnlyValidArgs),
-	Run:   runInitCmd,
+	Short: "Initialize the local dotfiles repository",
+	Long: `Initialize the local dotfiles repository
+
+# Print initialization guide based on current user.
+domic init
+
+# Clone the dotfiles repository from https://github.com/YOURNAME/dotfiles
+domic init YOURNAME
+domic init YOURNAME/mydotfiles
+domic init https://github.com/YOURNAME/dotfiles`,
+	Args: cobra.MatchAll(cobra.RangeArgs(0, 1), cobra.OnlyValidArgs),
+	Run:  runInitCmd,
 }
 
 func runInitCmd(cmd *cobra.Command, args []string) {

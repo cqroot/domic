@@ -16,8 +16,8 @@ func init() {
 
 var applyCmd = &cobra.Command{
 	Use:   "apply",
-	Short: "Create symlinks to all dotfiles in `basedir/dots`",
-	Long:  "Create symlinks to all dotfiles in `basedir/dots`",
+	Short: "Create symlinks to all dotfiles in basedir",
+	Long:  "Create symlinks to all dotfiles in basedir",
 	Run:   runApplyCmd,
 }
 
