@@ -22,10 +22,7 @@ var revokeCmd = &cobra.Command{
 }
 
 func runRevokeCmd(cmd *cobra.Command, args []string) {
-	names, err := dotfiles.LocalDotNames()
-	cobra.CheckErr(err)
-
-	dotfiles.ForEach(names, func(name string, dot dotfile.Dotfile) {
+	err := dotfiles.ForEach(func(name string, dot dotfile.Dotfile) {
 		if dot.IsIgnored() {
 			return
 		}
@@ -35,4 +32,5 @@ func runRevokeCmd(cmd *cobra.Command, args []string) {
 			fmt.Print(text.FgRed.Sprintf("%s: %s\n", name, err.Error()))
 		}
 	})
+	cobra.CheckErr(err)
 }

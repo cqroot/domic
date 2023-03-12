@@ -2,28 +2,15 @@ package dotfile
 
 import (
 	"os/exec"
-	"path/filepath"
-	"runtime"
-	"strings"
-
-	"github.com/cqroot/domic/pkg/stdpath"
 )
 
 type Dotfile struct {
-	RelSrc  string
-	DstFunc func(goos string) string
-	Exec    string // Applied only if exec is present. Don't check if empty.
-	Doc     string // Documentation for configuration file paths. Usually a link to somewhere on the official website.
-}
-
-func (dot Dotfile) Src() string {
-	src := filepath.Join(stdpath.DotsDir(), dot.RelSrc)
-	return strings.ReplaceAll(src, "\\", "/")
-}
-
-func (dot Dotfile) Dst() string {
-	dst := dot.DstFunc(runtime.GOOS)
-	return strings.ReplaceAll(dst, "\\", "/")
+	// RelSrc string
+	// DstFunc func(goos string) string
+	Src  string
+	Dst  string
+	Exec string // Applied only if exec is present. Don't check if empty.
+	Doc  string // Documentation for configuration file paths. Usually a link to somewhere on the official website.
 }
 
 func (dot Dotfile) IsIgnored() bool {

@@ -19,7 +19,7 @@ func (dot Dotfile) State() State {
 		return StateIgnored
 	}
 
-	ok, err := symlink.Check(dot.Src(), dot.Dst())
+	ok, err := symlink.Check(dot.Src, dot.Dst)
 	if err != nil {
 		return StateTargetAlreadyExists
 	}
@@ -30,9 +30,9 @@ func (dot Dotfile) State() State {
 }
 
 func (dot Dotfile) Apply() error {
-	return symlink.Apply(dot.Src(), dot.Dst())
+	return symlink.Apply(dot.Src, dot.Dst)
 }
 
 func (dot Dotfile) Revoke() error {
-	return symlink.Revoke(dot.Src(), dot.Dst())
+	return symlink.Revoke(dot.Src, dot.Dst)
 }

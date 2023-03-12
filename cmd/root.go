@@ -33,36 +33,34 @@ func printStatus() {
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Dot", "Dst", "Status"})
 
-	names, err := dotfiles.LocalDotNames()
-	cobra.CheckErr(err)
-
-	dotfiles.ForEach(names, func(name string, dot dotfile.Dotfile) {
+	err := dotfiles.ForEach(func(name string, dot dotfile.Dotfile) {
 		switch dot.State() {
 		case dotfile.StateApplied:
 			if rootFlagIgnored {
 				return
 			}
-			t.AppendRow(table.Row{name, dot.Dst(), text.FgGreen.Sprint("✔")})
+			t.AppendRow(table.Row{name, dot.Dst, text.FgGreen.Sprint("✔")})
 
 		case dotfile.StateUnapplied:
 			if rootFlagIgnored {
 				return
 			}
-			t.AppendRow(table.Row{name, dot.Dst(), "✖"})
+			t.AppendRow(table.Row{name, dot.Dst, "✖"})
 
 		case dotfile.StateIgnored:
 			if !rootFlagIgnored && !rootFlagAll {
 				return
 			}
-			t.AppendRow(table.Row{name, dot.Dst(), text.FgYellow.Sprint("Ignored")})
+			t.AppendRow(table.Row{name, dot.Dst, text.FgYellow.Sprint("Ignored")})
 
 		case dotfile.StateTargetAlreadyExists:
 			if rootFlagIgnored {
 				return
 			}
-			t.AppendRow(table.Row{name, dot.Dst(), text.FgRed.Sprint("Destination dotfile already exists")})
+			t.AppendRow(table.Row{name, dot.Dst, text.FgRed.Sprint("Destination dotfile already exists")})
 		}
 	})
+	cobra.CheckErr(err)
 
 	t.Render()
 }
