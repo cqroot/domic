@@ -23,6 +23,8 @@ var exports = map[string]lua.LGFunction{
 	"goos":                        GOOS,
 	"home_dir":                    HomeDir,
 	"home_path":                   HomePath,
+	"dot_config_dir":              DotConfigDir,
+	"dot_config_path":             DotConfigPath,
 	"windows_app_data_dir":        WindowsAppDataDir,
 	"windows_app_data_path":       WindowsAppDataPath,
 	"windows_local_app_data_dir":  WindowsLocalAppDataDir,
@@ -56,6 +58,18 @@ func HomePath(L *lua.LState) int {
 	lv := L.ToString(1)
 
 	L.Push(lua.LString(filepath.Join(stdpath.HomeDir(), lv)))
+	return 1 // number of results
+}
+
+func DotConfigDir(L *lua.LState) int {
+	L.Push(lua.LString(filepath.Join(stdpath.HomeDir(), ".config")))
+	return 1 // number of results
+}
+
+func DotConfigPath(L *lua.LState) int {
+	lv := L.ToString(1)
+
+	L.Push(lua.LString(filepath.Join(stdpath.HomeDir(), ".config", lv)))
 	return 1 // number of results
 }
 
