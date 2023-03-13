@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/cqroot/domic/pkg/stdpath"
 	"github.com/yuin/gopher-lua"
 )
 
@@ -19,6 +20,7 @@ func Loader(L *lua.LState) int {
 var exports = map[string]lua.LGFunction{
 	"joinpath": JoinPath,
 	"goos":     GOOS,
+	"homedir":  HomeDir,
 }
 
 func JoinPath(L *lua.LState) int {
@@ -36,5 +38,10 @@ func JoinPath(L *lua.LState) int {
 
 func GOOS(L *lua.LState) int {
 	L.Push(lua.LString(runtime.GOOS))
+	return 1 // number of results
+}
+
+func HomeDir(L *lua.LState) int {
+	L.Push(lua.LString(stdpath.HomeDir()))
 	return 1 // number of results
 }

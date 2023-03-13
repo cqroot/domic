@@ -5,13 +5,7 @@ import (
 	"path/filepath"
 )
 
-var DebugMode = false
-
 func HomeDir() string {
-	if DebugMode {
-		return "$HOME"
-	}
-
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		homeDir = "/"
@@ -45,17 +39,11 @@ func ApplicationSupportPath(path string) string {
 // %APPDATA%/{path}
 func WindowsAppDataPath(path string) string {
 	appDataDir := os.Getenv("APPDATA")
-	if DebugMode {
-		appDataDir = "%APPDATA%"
-	}
 	return filepath.Join(appDataDir, path)
 }
 
 // %LOCALAPPDATA%/{path}
 func WindowsLocalAppDataPath(path string) string {
 	localAppDataDir := os.Getenv("LOCALAPPDATA")
-	if DebugMode {
-		localAppDataDir = "%LOCALAPPDATA%"
-	}
 	return filepath.Join(localAppDataDir, path)
 }
