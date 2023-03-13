@@ -1,6 +1,7 @@
 package domiclua
 
 import (
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -18,9 +19,14 @@ func Loader(L *lua.LState) int {
 }
 
 var exports = map[string]lua.LGFunction{
-	"joinpath": JoinPath,
-	"goos":     GOOS,
-	"homedir":  HomeDir,
+	"join_path":                   JoinPath,
+	"goos":                        GOOS,
+	"home_dir":                    HomeDir,
+	"home_path":                   HomePath,
+	"windows_app_data_dir":        WindowsAppDataDir,
+	"windows_app_data_path":       WindowsAppDataPath,
+	"windows_local_app_data_dir":  WindowsLocalAppDataDir,
+	"windows_local_app_data_path": WindowsLocalAppDataPath,
 }
 
 func JoinPath(L *lua.LState) int {
@@ -43,5 +49,36 @@ func GOOS(L *lua.LState) int {
 
 func HomeDir(L *lua.LState) int {
 	L.Push(lua.LString(stdpath.HomeDir()))
+	return 1 // number of results
+}
+
+func HomePath(L *lua.LState) int {
+	lv := L.ToString(1)
+
+	L.Push(lua.LString(filepath.Join(stdpath.HomeDir(), lv)))
+	return 1 // number of results
+}
+
+func WindowsAppDataDir(L *lua.LState) int {
+	L.Push(lua.LString(os.Getenv("APPDATA")))
+	return 1 // number of results
+}
+
+func WindowsAppDataPath(L *lua.LState) int {
+	lv := L.ToString(1)
+
+	L.Push(lua.LString(filepath.Join(os.Getenv("APPDATA"), lv)))
+	return 1 // number of results
+}
+
+func WindowsLocalAppDataDir(L *lua.LState) int {
+	L.Push(lua.LString(os.Getenv("LOCALAPPDATA")))
+	return 1 // number of results
+}
+
+func WindowsLocalAppDataPath(L *lua.LState) int {
+	lv := L.ToString(1)
+
+	L.Push(lua.LString(filepath.Join(os.Getenv("LOCALAPPDATA"), lv)))
 	return 1 // number of results
 }
