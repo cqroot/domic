@@ -103,10 +103,10 @@ func FirefoxProfileDir(L *lua.LState) int {
 	firefoxDir := ""
 
 	switch runtime.GOOS {
-	case "linux":
-		firefoxDir = filepath.Join(stdpath.HomeDir(), ".Mozilla/Firefox")
+	// case "linux":
+	// 	firefoxDir = filepath.Join(stdpath.HomeDir(), ".Mozilla/Firefox")
 	case "windows":
-		firefoxDir = filepath.Join(os.Getenv("APPDATA"), ".Mozilla/Firefox")
+		firefoxDir = filepath.Join(os.Getenv("APPDATA"), "Mozilla/Firefox")
 	default:
 		L.Push(lua.LString(""))
 		return 1
