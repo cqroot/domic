@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/cqroot/domic/pkg/stdpath"
 	"github.com/yuin/gopher-lua"
@@ -29,6 +30,7 @@ var exports = map[string]lua.LGFunction{
 	"windows_app_data_path":       WindowsAppDataPath,
 	"windows_local_app_data_dir":  WindowsLocalAppDataDir,
 	"windows_local_app_data_path": WindowsLocalAppDataPath,
+	"firefox_profile_dir":         FirefoxProfileDir,
 }
 
 func JoinPath(L *lua.LState) int {
@@ -94,5 +96,39 @@ func WindowsLocalAppDataPath(L *lua.LState) int {
 	lv := L.ToString(1)
 
 	L.Push(lua.LString(filepath.Join(os.Getenv("LOCALAPPDATA"), lv)))
+	return 1 // number of results
+}
+
+func FirefoxProfileDir(L *lua.LState) int {
+	firefoxDir := ""
+
+	switch runtime.GOOS {
+	case "linux":
+		firefoxDir = filepath.Join(stdpath.HomeDir(), ".Mozilla/Firefox")
+	case "windows":
+		firefoxDir = filepath.Join(os.Getenv("APPDATA"), ".Mozilla/Firefox")
+	default:
+		L.Push(lua.LString(""))
+		return 1
+	}
+
+	files, err := os.ReadDir(firefoxDir)
+	if err != nil {
+		L.Push(lua.LString(""))
+		return 1
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			continue
+		}
+
+		if strings.Contains(file.Name(), "default") {
+			L.Push(lua.LString(filepath.Join(firefoxDir, file.Name())))
+			return 1 // number of results
+		}
+	}
+
+	L.Push(lua.LString(""))
 	return 1 // number of results
 }
