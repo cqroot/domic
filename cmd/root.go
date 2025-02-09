@@ -1,12 +1,15 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/cqroot/domic/internal/manager"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -51,8 +54,21 @@ func NewRootCmd() *cobra.Command {
 			checkResult, err := m.Check()
 			cobra.CheckErr(err)
 
+			maxKeyLen := 0
+			for name, _ := range checkResult {
+				if len(name) > maxKeyLen {
+					maxKeyLen = len(name)
+				}
+			}
+
 			for name, result := range checkResult {
-				fmt.Printf("%s: %s\n", name, result)
+				output := ""
+				if errors.Is(result, manager.CheckResultOk) {
+					output = color.GreenString(result.Error())
+				} else {
+					output = color.RedString(result.Error())
+				}
+				fmt.Printf("%s %s: %s\n", color.CyanString(name), strings.Repeat(" ", maxKeyLen-len(name)), output)
 			}
 		},
 	}

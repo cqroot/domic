@@ -3,6 +3,7 @@ package manager
 import (
 	"errors"
 	"fmt"
+	"github.com/fatih/color"
 	"os"
 	"path/filepath"
 
@@ -115,7 +116,7 @@ func (m *Manager) Apply() error {
 				return fmt.Errorf("error creating directory for %s: %v", name, err)
 			}
 
-			fmt.Printf("Applying %s -> %s\n", src, dst)
+			fmt.Printf("%s %s %s %s\n", color.CyanString(name), src, color.YellowString("->"), dst)
 			if err := utils.CopyFile(src, dst); err != nil {
 				return fmt.Errorf("error applying %s: %v", name, err)
 			}
