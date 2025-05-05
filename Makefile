@@ -8,6 +8,8 @@ cover: test
 
 .PHONY: check
 check:
+	grep -L "Copyright" $$(find . -type f -name "*.go")
+	@echo
 	golangci-lint run
 	@echo
 	gofumpt -l .
