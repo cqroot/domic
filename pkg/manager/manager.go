@@ -52,7 +52,7 @@ func New(opts ...Option) (*Manager, error) {
 	}
 
 	var err error
-	mgr.workDir, err = utils.ExpandPath(mgr.workDir)
+	mgr.workDir, err = utils.ExpandPath(mgr.workDir, ".")
 	if err != nil {
 		return nil, err
 	}

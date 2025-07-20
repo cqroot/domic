@@ -43,33 +43,33 @@ type Config struct {
 	MaxSourceLen int // maxSourceLen stores the maximum length of the 'source' field for alignment in formatted output
 }
 
-func FillConfig(baseDir string, config *Config) error {
+func FillConfig(baseDir string, cfg *Config) error {
 	var err error
-	for name := range config.Dotfiles {
-		pkg := config.Dotfiles[name]
+	for name := range cfg.Dotfiles {
+		pkg := cfg.Dotfiles[name]
 		if pkg.Source == "" {
-			pkg.Source = filepath.Join(config.WorkDir, name)
+			pkg.Source = filepath.Join(cfg.WorkDir, name)
 		}
 
-		pkg.Source, err = utils.ExpandPath(pkg.Source)
+		pkg.Source, err = utils.ExpandPath(pkg.Source, cfg.WorkDir)
 		if err != nil {
 			return err
 		}
-		pkg.Target, err = utils.ExpandPath(pkg.Target)
+		pkg.Target, err = utils.ExpandPath(pkg.Target, cfg.WorkDir)
 		if err != nil {
 			return err
 		}
 
-		config.Names = append(config.Names, name)
-		if len(name) > config.MaxNameLen {
-			config.MaxNameLen = len(name)
+		cfg.Names = append(cfg.Names, name)
+		if len(name) > cfg.MaxNameLen {
+			cfg.MaxNameLen = len(name)
 		}
-		if len(pkg.Source) > config.MaxSourceLen {
-			config.MaxSourceLen = len(pkg.Source)
+		if len(pkg.Source) > cfg.MaxSourceLen {
+			cfg.MaxSourceLen = len(pkg.Source)
 		}
 	}
 
-	sort.Strings(config.Names)
+	sort.Strings(cfg.Names)
 	return nil
 }
 

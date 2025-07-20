@@ -25,7 +25,7 @@ import (
 )
 
 // ExpandPath expands a relative path into an absolute path.
-func ExpandPath(path string) (string, error) {
+func ExpandPath(path string, workDir string) (string, error) {
 	newPath := os.ExpandEnv(path)
 
 	if strings.HasPrefix(path, "~/") {
@@ -36,6 +36,9 @@ func ExpandPath(path string) (string, error) {
 		newPath = filepath.Join(home, path[2:])
 	}
 
+	if !filepath.IsAbs(newPath) {
+		newPath = filepath.Join(workDir, newPath)
+	}
 	return filepath.Abs(newPath)
 }
 
