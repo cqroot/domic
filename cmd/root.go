@@ -49,7 +49,7 @@ func NewRootCmd() *cobra.Command {
 		},
 	}
 
-	rootCmd.PersistentFlags().StringVarP(&workDir, "directory", "d", ".", "working directory")
+	rootCmd.PersistentFlags().StringVarP(&workDir, "directory", "d", "~/.dotfiles", "working directory")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.AddCommand(NewApplyCmd())
 

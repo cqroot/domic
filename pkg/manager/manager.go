@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/cqroot/domic/pkg/config"
+	"github.com/cqroot/domic/pkg/utils"
 	"github.com/fatih/color"
 )
 
@@ -47,7 +48,13 @@ func New(opts ...Option) (*Manager, error) {
 	}
 
 	if mgr.workDir == "" {
-		mgr.workDir = "."
+		mgr.workDir = "~/.dotfiles"
+	}
+
+	var err error
+	mgr.workDir, err = utils.ExpandPath(mgr.workDir)
+	if err != nil {
+		return nil, err
 	}
 	os.Setenv("DOMIC_WORK_DIR", mgr.workDir)
 
