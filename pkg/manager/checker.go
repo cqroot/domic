@@ -21,6 +21,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
+	"slices"
 
 	"github.com/cqroot/domic/pkg/config"
 	"github.com/cqroot/domic/pkg/utils"
@@ -32,6 +34,26 @@ type CheckResult struct {
 }
 
 type PackageChecker func(config.Config, config.Package) CheckResult
+
+func CheckPackageOs(cfg config.Config, pkg config.Package) CheckResult {
+	if len(pkg.SupportedOs) == 0 {
+		return CheckResult{IsOk: true, Err: nil}
+	}
+	if !slices.Contains(pkg.SupportedOs, runtime.GOOS) {
+		return CheckResult{IsOk: false, Err: fmt.Errorf("operating system (%s) does not support", runtime.GOOS)}
+	}
+	return CheckResult{IsOk: true, Err: nil}
+}
+
+func CheckPackageExec(cfg config.Config, pkg config.Package) CheckResult {
+	if pkg.Exec == "" {
+		return CheckResult{IsOk: true, Err: nil}
+	}
+	if !utils.CommandExists(pkg.Exec) {
+		return CheckResult{IsOk: false, Err: fmt.Errorf("command (%s) does not exist", pkg.Exec)}
+	}
+	return CheckResult{IsOk: true, Err: nil}
+}
 
 func CheckPackageSymlink(cfg config.Config, pkg config.Package) CheckResult {
 	// Check if source exists
@@ -74,18 +96,9 @@ func CheckPackageSymlink(cfg config.Config, pkg config.Package) CheckResult {
 	return CheckResult{IsOk: false, Err: errors.New("target already exists and is not a symlink")}
 }
 
-func CheckPackageExec(cfg config.Config, pkg config.Package) CheckResult {
-	if pkg.Exec == "" {
-		return CheckResult{IsOk: true, Err: nil}
-	}
-	if !utils.CommandExists(pkg.Exec) {
-		return CheckResult{IsOk: false, Err: fmt.Errorf("command (%s) does not exist", pkg.Exec)}
-	}
-	return CheckResult{IsOk: true, Err: nil}
-}
-
 func CheckPackage(cfg config.Config, pkg config.Package) CheckResult {
 	checkers := []PackageChecker{
+		CheckPackageOs,
 		CheckPackageExec,
 		CheckPackageSymlink,
 	}

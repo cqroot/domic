@@ -29,9 +29,10 @@ import (
 type Package struct {
 	// Package source directory; if not provided, defaults to a directory named `name`
 	// under the directory where domic.toml is located.
-	Source string `toml:"source"`
-	Target string `toml:"target"`
-	Exec   string `toml:"exec"`
+	Source      string   `toml:"source"`
+	Target      string   `toml:"target"`
+	Exec        string   `toml:"exec"`
+	SupportedOs []string `toml:"os"`
 }
 
 type Config struct {
