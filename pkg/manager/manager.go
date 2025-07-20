@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package manager
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -80,23 +81,24 @@ func (mgr Manager) Execute(op Operation) error {
 		formattedNameHighlight := fmt.Sprintf("%s*%s", name, strings.Repeat(" ", mgr.config.MaxNameLen-len(name)))
 		formattedSource := fmt.Sprintf("%s%s", pkg.Source, strings.Repeat(" ", mgr.config.MaxSourceLen-len(pkg.Source)))
 
-		res := CheckPackage(mgr.config, *pkg)
-		if res.Err != nil {
-			fmt.Printf("%s ERROR: %s.\n", color.RedString(formattedName), res.Err)
-			continue
-		}
-		if res.IsOk {
+		err := CheckPackage(mgr.config, *pkg)
+		if err == nil {
 			fmt.Printf("%s %s => %s\n", color.GreenString(formattedName), formattedSource, pkg.Target)
 			continue
 		}
+		if err != nil && !errors.Is(err, CheckResultTargetNotExist) {
+			fmt.Printf("%s %s.\n", color.RedString(formattedName), color.RedString(err.Error()))
+			continue
+		}
 
+		// Only if the target does not exist does the change need to be applied
 		switch op {
 		case OperationCheck:
 			fmt.Printf("%s %s => %s\n", color.YellowString(formattedName), formattedSource, pkg.Target)
 		case OperationApply:
 			err := os.Symlink(pkg.Source, pkg.Target)
 			if err != nil {
-				fmt.Printf("%s ERROR: %s.\n", color.RedString(formattedName), err)
+				fmt.Printf("%s %s.\n", color.RedString(formattedName), color.RedString(err.Error()))
 			} else {
 				fmt.Printf("%s %s => %s\n", color.GreenString(formattedNameHighlight), formattedSource, pkg.Target)
 			}

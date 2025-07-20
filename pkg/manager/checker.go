@@ -28,42 +28,49 @@ import (
 	"github.com/cqroot/domic/pkg/utils"
 )
 
-type CheckResult struct {
-	IsOk bool
-	Err  error
-}
+type CheckResultError error
 
-type PackageChecker func(config.Config, config.Package) CheckResult
+var (
+	CheckResultOk               CheckResultError = nil
+	CheckResultOsNotSupport     CheckResultError = errors.New("operating system does not support")
+	CheckResultCommandNotExist  CheckResultError = errors.New("command does not exist")
+	CheckResultSourceNotExist   CheckResultError = errors.New("source does not exist")
+	CheckResultDifferentSymlink CheckResultError = errors.New("target symlink points to different location")
+	CheckResultTargetExist      CheckResultError = errors.New("target already exists and is not a symlink")
+	CheckResultTargetNotExist   CheckResultError = errors.New("target does not exist")
+)
 
-func CheckPackageOs(cfg config.Config, pkg config.Package) CheckResult {
+type PackageChecker func(config.Config, config.Package) error
+
+func CheckPackageOs(cfg config.Config, pkg config.Package) error {
 	if len(pkg.SupportedOs) == 0 {
-		return CheckResult{IsOk: true, Err: nil}
+		return CheckResultOk
 	}
 	if !slices.Contains(pkg.SupportedOs, runtime.GOOS) {
-		return CheckResult{IsOk: false, Err: fmt.Errorf("operating system (%s) does not support", runtime.GOOS)}
+		return fmt.Errorf("%w: %s", CheckResultOsNotSupport, runtime.GOOS)
 	}
-	return CheckResult{IsOk: true, Err: nil}
+	return CheckResultOk
 }
 
-func CheckPackageExec(cfg config.Config, pkg config.Package) CheckResult {
+func CheckPackageExec(cfg config.Config, pkg config.Package) error {
 	if pkg.Exec == "" {
-		return CheckResult{IsOk: true, Err: nil}
+		return CheckResultOk
 	}
 	if !utils.CommandExists(pkg.Exec) {
-		return CheckResult{IsOk: false, Err: fmt.Errorf("command (%s) does not exist", pkg.Exec)}
+		return fmt.Errorf("%w: %s", CheckResultCommandNotExist, pkg.Exec)
 	}
-	return CheckResult{IsOk: true, Err: nil}
+	return CheckResultOk
 }
 
-func CheckPackageSymlink(cfg config.Config, pkg config.Package) CheckResult {
+func CheckPackageSymlink(cfg config.Config, pkg config.Package) error {
 	// Check if source exists
 	_, err := os.Lstat(pkg.Source)
 	if err != nil {
 		if os.IsNotExist(err) {
 			// Target doesn't exist
-			return CheckResult{IsOk: false, Err: fmt.Errorf("source does not exist (%s)", pkg.Source)}
+			return fmt.Errorf("%w: %s", CheckResultSourceNotExist, pkg.Source)
 		}
-		return CheckResult{IsOk: false, Err: err}
+		return err
 	}
 
 	// Check if target exists
@@ -71,9 +78,9 @@ func CheckPackageSymlink(cfg config.Config, pkg config.Package) CheckResult {
 	if err != nil {
 		if os.IsNotExist(err) {
 			// Target doesn't exist
-			return CheckResult{IsOk: false, Err: nil}
+			return CheckResultTargetNotExist
 		}
-		return CheckResult{IsOk: false, Err: err}
+		return err
 	}
 
 	// Check if target is a symlink
@@ -81,22 +88,22 @@ func CheckPackageSymlink(cfg config.Config, pkg config.Package) CheckResult {
 		// Read the symlink destination
 		linkDest, err := os.Readlink(pkg.Target)
 		if err != nil {
-			return CheckResult{IsOk: false, Err: err}
+			return err
 		}
 
 		// Check if symlink points to the source
 		if linkDest == pkg.Source {
 			// Correct symlink already exists - no action needed
-			return CheckResult{IsOk: true, Err: nil}
+			return CheckResultOk
 		}
-		return CheckResult{IsOk: false, Err: fmt.Errorf("target symlink points to different location (%s)", linkDest)}
+		return fmt.Errorf("%w: %s", CheckResultDifferentSymlink, linkDest)
 	}
 
 	// Target exists but is not a symlink
-	return CheckResult{IsOk: false, Err: errors.New("target already exists and is not a symlink")}
+	return CheckResultTargetExist
 }
 
-func CheckPackage(cfg config.Config, pkg config.Package) CheckResult {
+func CheckPackage(cfg config.Config, pkg config.Package) error {
 	checkers := []PackageChecker{
 		CheckPackageOs,
 		CheckPackageExec,
@@ -104,10 +111,10 @@ func CheckPackage(cfg config.Config, pkg config.Package) CheckResult {
 	}
 
 	for _, checker := range checkers {
-		res := checker(cfg, pkg)
-		if res.Err != nil || !res.IsOk {
-			return res
+		err := checker(cfg, pkg)
+		if err != nil {
+			return err
 		}
 	}
-	return CheckResult{IsOk: true, Err: nil}
+	return CheckResultOk
 }
