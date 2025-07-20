@@ -18,7 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package manager
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -27,11 +26,6 @@ import (
 	"github.com/cqroot/domic/pkg/config"
 	"github.com/fatih/color"
 )
-
-type CheckResult struct {
-	IsOk bool
-	Err  error
-}
 
 type Manager struct {
 	config  config.Config
@@ -79,7 +73,7 @@ func (mgr Manager) Execute(op Operation) error {
 		formattedNameHighlight := fmt.Sprintf("%s*%s", name, strings.Repeat(" ", mgr.config.MaxNameLen-len(name)))
 		formattedSource := fmt.Sprintf("%s%s", pkg.Source, strings.Repeat(" ", mgr.config.MaxSourceLen-len(pkg.Source)))
 
-		res := CheckPackage(pkg.Source, pkg.Target)
+		res := CheckPackage(mgr.config, *pkg)
 		if res.Err != nil {
 			fmt.Printf("%s ERROR: %s.\n", color.RedString(formattedName), res.Err)
 			continue
@@ -110,45 +104,4 @@ func (mgr Manager) Check() error {
 
 func (mgr Manager) Apply() error {
 	return mgr.Execute(OperationApply)
-}
-
-func CheckPackage(source, target string) CheckResult {
-	// Check if source exists
-	_, err := os.Lstat(source)
-	if err != nil {
-		if os.IsNotExist(err) {
-			// Target doesn't exist
-			return CheckResult{IsOk: false, Err: fmt.Errorf("source does not exist (%s)", source)}
-		}
-		return CheckResult{IsOk: false, Err: err}
-	}
-
-	// Check if target exists
-	targetInfo, err := os.Lstat(target)
-	if err != nil {
-		if os.IsNotExist(err) {
-			// Target doesn't exist
-			return CheckResult{IsOk: false, Err: nil}
-		}
-		return CheckResult{IsOk: false, Err: err}
-	}
-
-	// Check if target is a symlink
-	if targetInfo.Mode()&os.ModeSymlink != 0 {
-		// Read the symlink destination
-		linkDest, err := os.Readlink(target)
-		if err != nil {
-			return CheckResult{IsOk: false, Err: err}
-		}
-
-		// Check if symlink points to the source
-		if linkDest == source {
-			// Correct symlink already exists - no action needed
-			return CheckResult{IsOk: true, Err: nil}
-		}
-		return CheckResult{IsOk: false, Err: fmt.Errorf("target symlink points to different location (%s)", linkDest)}
-	}
-
-	// Target exists but is not a symlink
-	return CheckResult{IsOk: false, Err: errors.New("target already exists and is not a symlink")}
 }

@@ -21,8 +21,8 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 
+	"github.com/cqroot/domic/pkg/utils"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -31,6 +31,7 @@ type Package struct {
 	// under the directory where domic.toml is located.
 	Source string `toml:"source"`
 	Target string `toml:"target"`
+	Exec   string `toml:"exec"`
 }
 
 type Config struct {
@@ -41,21 +42,6 @@ type Config struct {
 	MaxSourceLen int // maxSourceLen stores the maximum length of the 'source' field for alignment in formatted output
 }
 
-// ExpandPath expands a relative path into an absolute path.
-func ExpandPath(path string) (string, error) {
-	newPath := os.ExpandEnv(path)
-
-	if strings.HasPrefix(path, "~/") {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return path, err
-		}
-		newPath = filepath.Join(home, path[2:])
-	}
-
-	return filepath.Abs(newPath)
-}
-
 func FillConfig(baseDir string, config *Config) error {
 	var err error
 	for name := range config.Dotfiles {
@@ -64,11 +50,11 @@ func FillConfig(baseDir string, config *Config) error {
 			pkg.Source = filepath.Join(config.WorkDir, name)
 		}
 
-		pkg.Source, err = ExpandPath(pkg.Source)
+		pkg.Source, err = utils.ExpandPath(pkg.Source)
 		if err != nil {
 			return err
 		}
-		pkg.Target, err = ExpandPath(pkg.Target)
+		pkg.Target, err = utils.ExpandPath(pkg.Target)
 		if err != nil {
 			return err
 		}
