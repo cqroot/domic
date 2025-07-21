@@ -31,35 +31,35 @@ import (
 type CheckResultError error
 
 var (
-	CheckResultOk               CheckResultError = nil
-	CheckResultOsNotSupport     CheckResultError = errors.New("operating system does not support")
-	CheckResultCommandNotExist  CheckResultError = errors.New("command does not exist")
-	CheckResultSourceNotExist   CheckResultError = errors.New("source does not exist")
-	CheckResultDifferentSymlink CheckResultError = errors.New("target symlink points to different location")
-	CheckResultTargetExist      CheckResultError = errors.New("target already exists and is not a symlink")
-	CheckResultTargetNotExist   CheckResultError = errors.New("target does not exist")
+	ErrCheckResultOk               CheckResultError = nil
+	ErrCheckResultOsNotSupport     CheckResultError = errors.New("operating system does not support")
+	ErrCheckResultCommandNotExist  CheckResultError = errors.New("command does not exist")
+	ErrCheckResultSourceNotExist   CheckResultError = errors.New("source does not exist")
+	ErrCheckResultDifferentSymlink CheckResultError = errors.New("target symlink points to different location")
+	ErrCheckResultTargetExist      CheckResultError = errors.New("target already exists and is not a symlink")
+	ErrCheckResultTargetNotExist   CheckResultError = errors.New("target does not exist")
 )
 
 type PackageChecker func(config.Config, config.Package) error
 
 func CheckPackageOs(cfg config.Config, pkg config.Package) error {
 	if len(pkg.SupportedOs) == 0 {
-		return CheckResultOk
+		return ErrCheckResultOk
 	}
 	if !slices.Contains(pkg.SupportedOs, runtime.GOOS) {
-		return fmt.Errorf("%w: %s", CheckResultOsNotSupport, runtime.GOOS)
+		return fmt.Errorf("%w: %s", ErrCheckResultOsNotSupport, runtime.GOOS)
 	}
-	return CheckResultOk
+	return ErrCheckResultOk
 }
 
 func CheckPackageExec(cfg config.Config, pkg config.Package) error {
 	if pkg.Exec == "" {
-		return CheckResultOk
+		return ErrCheckResultOk
 	}
 	if !utils.CommandExists(pkg.Exec) {
-		return fmt.Errorf("%w: %s", CheckResultCommandNotExist, pkg.Exec)
+		return fmt.Errorf("%w: %s", ErrCheckResultCommandNotExist, pkg.Exec)
 	}
-	return CheckResultOk
+	return ErrCheckResultOk
 }
 
 func CheckPackageSymlink(cfg config.Config, pkg config.Package) error {
@@ -68,7 +68,7 @@ func CheckPackageSymlink(cfg config.Config, pkg config.Package) error {
 	if err != nil {
 		if os.IsNotExist(err) {
 			// Target doesn't exist
-			return fmt.Errorf("%w: %s", CheckResultSourceNotExist, pkg.Source)
+			return fmt.Errorf("%w: %s", ErrCheckResultSourceNotExist, pkg.Source)
 		}
 		return err
 	}
@@ -78,7 +78,7 @@ func CheckPackageSymlink(cfg config.Config, pkg config.Package) error {
 	if err != nil {
 		if os.IsNotExist(err) {
 			// Target doesn't exist
-			return CheckResultTargetNotExist
+			return ErrCheckResultTargetNotExist
 		}
 		return err
 	}
@@ -94,13 +94,13 @@ func CheckPackageSymlink(cfg config.Config, pkg config.Package) error {
 		// Check if symlink points to the source
 		if linkDest == pkg.Source {
 			// Correct symlink already exists - no action needed
-			return CheckResultOk
+			return ErrCheckResultOk
 		}
-		return fmt.Errorf("%w: %s", CheckResultDifferentSymlink, linkDest)
+		return fmt.Errorf("%w: %s", ErrCheckResultDifferentSymlink, linkDest)
 	}
 
 	// Target exists but is not a symlink
-	return CheckResultTargetExist
+	return ErrCheckResultTargetExist
 }
 
 func CheckPackage(cfg config.Config, pkg config.Package) error {
@@ -116,5 +116,5 @@ func CheckPackage(cfg config.Config, pkg config.Package) error {
 			return err
 		}
 	}
-	return CheckResultOk
+	return ErrCheckResultOk
 }

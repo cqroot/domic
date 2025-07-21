@@ -57,7 +57,7 @@ func New(opts ...Option) (*Manager, error) {
 	if err != nil {
 		return nil, err
 	}
-	os.Setenv("DOMIC_WORK_DIR", mgr.workDir)
+	_ = os.Setenv("DOMIC_WORK_DIR", mgr.workDir)
 
 	configFile, err := filepath.Abs(filepath.Join(mgr.workDir, "domic.toml"))
 	if err != nil {
@@ -81,12 +81,14 @@ func (mgr Manager) Execute(op Operation) error {
 		formattedNameHighlight := fmt.Sprintf("%s*%s", name, strings.Repeat(" ", mgr.config.MaxNameLen-len(name)))
 		formattedSource := fmt.Sprintf("%s%s", pkg.Source, strings.Repeat(" ", mgr.config.MaxSourceLen-len(pkg.Source)))
 
+		separator := color.BlueString("=>")
+
 		err := CheckPackage(mgr.config, *pkg)
 		if err == nil {
-			fmt.Printf("%s %s => %s\n", color.GreenString(formattedName), formattedSource, pkg.Target)
+			fmt.Printf("%s %s %s %s\n", color.GreenString(formattedName), formattedSource, separator, pkg.Target)
 			continue
 		}
-		if err != nil && !errors.Is(err, CheckResultTargetNotExist) {
+		if !errors.Is(err, ErrCheckResultTargetNotExist) {
 			fmt.Printf("%s %s.\n", color.RedString(formattedName), color.RedString(err.Error()))
 			continue
 		}
@@ -94,13 +96,13 @@ func (mgr Manager) Execute(op Operation) error {
 		// Only if the target does not exist does the change need to be applied
 		switch op {
 		case OperationCheck:
-			fmt.Printf("%s %s => %s\n", color.YellowString(formattedName), formattedSource, pkg.Target)
+			fmt.Printf("%s %s %s %s\n", color.YellowString(formattedName), formattedSource, separator, pkg.Target)
 		case OperationApply:
 			err := os.Symlink(pkg.Source, pkg.Target)
 			if err != nil {
 				fmt.Printf("%s %s.\n", color.RedString(formattedName), color.RedString(err.Error()))
 			} else {
-				fmt.Printf("%s %s => %s\n", color.GreenString(formattedNameHighlight), formattedSource, pkg.Target)
+				fmt.Printf("%s %s %s %s\n", color.GreenString(formattedNameHighlight), formattedSource, separator, pkg.Target)
 			}
 		}
 	}

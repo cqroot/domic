@@ -86,6 +86,6 @@ func LoadConfig(configFile string) (Config, error) {
 	}
 
 	cfg.WorkDir = filepath.Dir(configFile)
-	FillConfig(filepath.Dir(configFile), &cfg)
-	return cfg, nil
+	err = FillConfig(filepath.Dir(configFile), &cfg)
+	return cfg, err
 }
