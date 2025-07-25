@@ -109,16 +109,21 @@ func (mgr Manager) ExecutePackage(name string, op Operation) string {
 	return ""
 }
 
+type execResult struct {
+	name   string
+	output string
+}
+
 func (mgr Manager) Execute(op Operation) error {
-	results := make([]string, len(mgr.config.Dotfiles))
-	resultCh := make(chan string)
+	results := make(map[string]string)
+	resultCh := make(chan execResult)
 
 	wgWorker := sync.WaitGroup{}
 	for _, name := range mgr.config.Names {
 		wgWorker.Add(1)
 		go func() {
 			defer wgWorker.Done()
-			resultCh <- mgr.ExecutePackage(name, op)
+			resultCh <- execResult{name, mgr.ExecutePackage(name, op)}
 		}()
 	}
 
@@ -127,7 +132,7 @@ func (mgr Manager) Execute(op Operation) error {
 	go func() {
 		idx := 0
 		for result := range resultCh {
-			results = append(results, result)
+			results[result.name] = result.output
 			idx++
 		}
 		wgResult.Done()
@@ -137,8 +142,8 @@ func (mgr Manager) Execute(op Operation) error {
 	close(resultCh)
 	wgResult.Wait()
 
-	for _, result := range results {
-		fmt.Print(result)
+	for _, name := range mgr.config.Names {
+		fmt.Print(results[name])
 	}
 	return nil
 }
