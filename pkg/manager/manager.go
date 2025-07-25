@@ -23,6 +23,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/cqroot/domic/pkg/config"
 	"github.com/cqroot/domic/pkg/utils"
@@ -73,38 +74,71 @@ func New(opts ...Option) (*Manager, error) {
 	return &mgr, nil
 }
 
+func (mgr Manager) ExecutePackage(name string, op Operation) string {
+	pkg := mgr.config.Dotfiles[name]
+
+	formattedName := fmt.Sprintf("%s%s", name, strings.Repeat(" ", mgr.config.MaxNameLen-len(name)+1))
+	formattedNameHighlight := fmt.Sprintf("%s*%s", name, strings.Repeat(" ", mgr.config.MaxNameLen-len(name)))
+	formattedSource := fmt.Sprintf("%s%s", pkg.Source, strings.Repeat(" ", mgr.config.MaxSourceLen-len(pkg.Source)))
+
+	separator := color.BlueString("=>")
+
+	err := CheckPackage(mgr.config, *pkg)
+	if err == nil {
+		return fmt.Sprintf("%s %s %s %s\n",
+			color.GreenString(formattedName), formattedSource, separator, pkg.Target)
+	}
+	if !errors.Is(err, ErrCheckResultTargetNotExist) {
+		return fmt.Sprintf("%s %s.\n",
+			color.RedString(formattedName), color.RedString(err.Error()))
+	}
+
+	// Only if the target does not exist does the change need to be applied
+	switch op {
+	case OperationCheck:
+		return fmt.Sprintf("%s %s %s %s\n", color.YellowString(formattedName), formattedSource, separator, pkg.Target)
+	case OperationApply:
+		err := os.Symlink(pkg.Source, pkg.Target)
+		if err != nil {
+			return fmt.Sprintf("%s %s.\n", color.RedString(formattedName), color.RedString(err.Error()))
+		} else {
+			return fmt.Sprintf("%s %s %s %s\n",
+				color.GreenString(formattedNameHighlight), formattedSource, separator, pkg.Target)
+		}
+	}
+	return ""
+}
+
 func (mgr Manager) Execute(op Operation) error {
+	results := make([]string, len(mgr.config.Dotfiles))
+	resultCh := make(chan string)
+
+	wgWorker := sync.WaitGroup{}
 	for _, name := range mgr.config.Names {
-		pkg := mgr.config.Dotfiles[name]
+		wgWorker.Add(1)
+		go func() {
+			defer wgWorker.Done()
+			resultCh <- mgr.ExecutePackage(name, op)
+		}()
+	}
 
-		formattedName := fmt.Sprintf("%s%s", name, strings.Repeat(" ", mgr.config.MaxNameLen-len(name)+1))
-		formattedNameHighlight := fmt.Sprintf("%s*%s", name, strings.Repeat(" ", mgr.config.MaxNameLen-len(name)))
-		formattedSource := fmt.Sprintf("%s%s", pkg.Source, strings.Repeat(" ", mgr.config.MaxSourceLen-len(pkg.Source)))
-
-		separator := color.BlueString("=>")
-
-		err := CheckPackage(mgr.config, *pkg)
-		if err == nil {
-			fmt.Printf("%s %s %s %s\n", color.GreenString(formattedName), formattedSource, separator, pkg.Target)
-			continue
+	wgResult := sync.WaitGroup{}
+	wgResult.Add(1)
+	go func() {
+		idx := 0
+		for result := range resultCh {
+			results = append(results, result)
+			idx++
 		}
-		if !errors.Is(err, ErrCheckResultTargetNotExist) {
-			fmt.Printf("%s %s.\n", color.RedString(formattedName), color.RedString(err.Error()))
-			continue
-		}
+		wgResult.Done()
+	}()
 
-		// Only if the target does not exist does the change need to be applied
-		switch op {
-		case OperationCheck:
-			fmt.Printf("%s %s %s %s\n", color.YellowString(formattedName), formattedSource, separator, pkg.Target)
-		case OperationApply:
-			err := os.Symlink(pkg.Source, pkg.Target)
-			if err != nil {
-				fmt.Printf("%s %s.\n", color.RedString(formattedName), color.RedString(err.Error()))
-			} else {
-				fmt.Printf("%s %s %s %s\n", color.GreenString(formattedNameHighlight), formattedSource, separator, pkg.Target)
-			}
-		}
+	wgWorker.Wait()
+	close(resultCh)
+	wgResult.Wait()
+
+	for _, result := range results {
+		fmt.Print(result)
 	}
 	return nil
 }
