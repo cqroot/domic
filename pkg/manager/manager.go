@@ -41,6 +41,7 @@ type Operation int
 const (
 	OperationCheck Operation = iota
 	OperationApply
+	OperationRemove
 )
 
 func New(opts ...Option) (*Manager, error) {
@@ -83,14 +84,31 @@ func (mgr Manager) ExecutePackage(name string, op Operation) string {
 
 	separator := color.BlueString("=>")
 
+	errString := func(err error) string {
+		return fmt.Sprintf("%s %s.\n",
+			color.RedString(formattedName), color.RedString(err.Error()))
+	}
+	hlString := func() string {
+		return fmt.Sprintf("%s %s %s %s\n",
+			color.GreenString(formattedNameHighlight), formattedSource, separator, pkg.Target)
+	}
+
 	err := CheckPackage(mgr.config, *pkg)
 	if err == nil {
+		if op == OperationRemove {
+			err := os.Remove(pkg.Target)
+			if err != nil {
+				return errString(err)
+			} else {
+				return hlString()
+			}
+		}
 		return fmt.Sprintf("%s %s %s %s\n",
 			color.GreenString(formattedName), formattedSource, separator, pkg.Target)
 	}
+
 	if !errors.Is(err, ErrCheckResultTargetNotExist) {
-		return fmt.Sprintf("%s %s.\n",
-			color.RedString(formattedName), color.RedString(err.Error()))
+		return errString(err)
 	}
 
 	// Only if the target does not exist does the change need to be applied
@@ -100,10 +118,9 @@ func (mgr Manager) ExecutePackage(name string, op Operation) string {
 	case OperationApply:
 		err := os.Symlink(pkg.Source, pkg.Target)
 		if err != nil {
-			return fmt.Sprintf("%s %s.\n", color.RedString(formattedName), color.RedString(err.Error()))
+			return errString(err)
 		} else {
-			return fmt.Sprintf("%s %s %s %s\n",
-				color.GreenString(formattedNameHighlight), formattedSource, separator, pkg.Target)
+			return hlString()
 		}
 	}
 	return ""
@@ -154,4 +171,8 @@ func (mgr Manager) Check() error {
 
 func (mgr Manager) Apply() error {
 	return mgr.Execute(OperationApply)
+}
+
+func (mgr Manager) Remove() error {
+	return mgr.Execute(OperationRemove)
 }
