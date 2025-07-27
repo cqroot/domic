@@ -85,7 +85,7 @@ func (mgr Manager) ExecutePackage(name string, op Operation) string {
 	separator := color.BlueString("=>")
 
 	errString := func(err error) string {
-		return fmt.Sprintf("%s %s.\n",
+		return fmt.Sprintf("%s %s\n",
 			color.RedString(formattedName), color.RedString(err.Error()))
 	}
 	hlString := func() string {
@@ -108,6 +108,9 @@ func (mgr Manager) ExecutePackage(name string, op Operation) string {
 	}
 
 	if !errors.Is(err, ErrCheckResultTargetNotExist) {
+		if !mgr.verbose && errors.Is(err, ErrCheckResultCommandNotExist) {
+			return ""
+		}
 		return errString(err)
 	}
 
