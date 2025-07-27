@@ -20,6 +20,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 
 	"github.com/cqroot/domic/pkg/utils"
@@ -29,10 +30,10 @@ import (
 type Package struct {
 	// Package source directory; if not provided, defaults to a directory named `name`
 	// under the directory where domic.toml is located.
-	Source      string   `toml:"source"`
-	Target      string   `toml:"target"`
-	Exec        string   `toml:"exec"`
-	SupportedOs []string `toml:"os"`
+	Source        string `toml:"source"`
+	Target        string `toml:"target"`
+	TargetWindows string `toml:"target_windows"`
+	Exec          string `toml:"exec"`
 }
 
 type Config struct {
@@ -55,6 +56,14 @@ func FillConfig(baseDir string, cfg *Config) error {
 		if err != nil {
 			return err
 		}
+
+		switch runtime.GOOS {
+		case "windows":
+			if pkg.TargetWindows != "" {
+				pkg.Target = pkg.TargetWindows
+			}
+		}
+
 		pkg.Target, err = utils.ExpandPath(pkg.Target, cfg.WorkDir)
 		if err != nil {
 			return err

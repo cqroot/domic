@@ -21,8 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"runtime"
-	"slices"
 
 	"github.com/cqroot/domic/pkg/config"
 	"github.com/cqroot/domic/pkg/utils"
@@ -41,16 +39,6 @@ var (
 )
 
 type PackageChecker func(config.Config, config.Package) error
-
-func CheckPackageOs(cfg config.Config, pkg config.Package) error {
-	if len(pkg.SupportedOs) == 0 {
-		return ErrCheckResultOk
-	}
-	if !slices.Contains(pkg.SupportedOs, runtime.GOOS) {
-		return fmt.Errorf("%w: %s", ErrCheckResultOsNotSupport, runtime.GOOS)
-	}
-	return ErrCheckResultOk
-}
 
 func CheckPackageExec(cfg config.Config, pkg config.Package) error {
 	if pkg.Exec == "" {
@@ -100,12 +88,11 @@ func CheckPackageSymlink(cfg config.Config, pkg config.Package) error {
 	}
 
 	// Target exists but is not a symlink
-	return ErrCheckResultTargetExist
+	return fmt.Errorf("%w: %s", ErrCheckResultTargetExist, pkg.Target)
 }
 
 func CheckPackage(cfg config.Config, pkg config.Package) error {
 	checkers := []PackageChecker{
-		CheckPackageOs,
 		CheckPackageExec,
 		CheckPackageSymlink,
 	}
