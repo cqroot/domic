@@ -40,7 +40,7 @@ func Load(file string) error {
 	if file != "" {
 		configPath = file
 	} else {
-		configPath = filepath.Join(xdg.ConfigHome, "domic", "config.toml")
+		configPath = filepath.Join(xdg.ConfigHome, "domic", "domic.toml")
 	}
 
 	sourceBase = filepath.Dir(configPath)
