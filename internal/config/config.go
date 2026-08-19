@@ -85,6 +85,10 @@ func ConfigPath() string {
 	return configPath
 }
 
+func ConfigDir() string {
+	return filepath.Join(xdg.ConfigHome, "domic")
+}
+
 func SourceBase() string {
 	return sourceBase
 }
