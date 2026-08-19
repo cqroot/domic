@@ -32,7 +32,7 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 	cmd.PersistentFlags().String("config", "", "path to config file (default is $XDG_CONFIG_HOME/domic/config.toml)")
-	cmd.AddCommand(newInstallCmd())
+	cmd.AddCommand(newApplyCmd())
 	cmd.AddCommand(newStatusCmd())
 	return cmd
 }

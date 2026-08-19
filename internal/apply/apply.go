@@ -1,4 +1,4 @@
-package install
+package apply
 
 import (
 	"errors"
@@ -34,18 +34,18 @@ func Run() error {
 			continue
 		}
 		source := filepath.Join(base, app.Path)
-		if err := installEntry(app.Name, source, target); err != nil {
+		if err := applyEntry(app.Name, source, target); err != nil {
 			errs = append(errs, fmt.Sprintf("%s: %v", app.Name, err))
 		}
 	}
 
 	if len(errs) > 0 {
-		return fmt.Errorf("install completed with errors:\n  %s", strings.Join(errs, "\n  "))
+		return fmt.Errorf("apply completed with errors:\n  %s", strings.Join(errs, "\n  "))
 	}
 	return nil
 }
 
-func installEntry(name, source, target string) error {
+func applyEntry(name, source, target string) error {
 	info, err := os.Stat(source)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -54,12 +54,12 @@ func installEntry(name, source, target string) error {
 		return fmt.Errorf("stat source %s: %w", source, err)
 	}
 	if info.IsDir() {
-		return walkAndInstall(name, source, target)
+		return walkAndApply(name, source, target)
 	}
 	return processFile(name, source, target)
 }
 
-func walkAndInstall(name, sourceDir, targetDir string) error {
+func walkAndApply(name, sourceDir, targetDir string) error {
 	return filepath.WalkDir(sourceDir, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
@@ -88,7 +88,7 @@ func processFile(name, source, target string) error {
 		if err := copyFile(source, target); err != nil {
 			return fmt.Errorf("copy: %w", err)
 		}
-		fmt.Printf("[%s] installed %s\n", name, target)
+		fmt.Printf("[%s] applied %s\n", name, target)
 		return nil
 	}
 
