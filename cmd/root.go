@@ -27,11 +27,15 @@ func newRootCmd() *cobra.Command {
 			return status.Run()
 		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if cmd.Name() == "init" {
+				return nil
+			}
 			file, _ := cmd.Flags().GetString("config")
 			return config.Load(file)
 		},
 	}
 	cmd.PersistentFlags().String("config", "", "path to config file (default is $XDG_CONFIG_HOME/domic/config.toml)")
+	cmd.AddCommand(newInitCmd())
 	cmd.AddCommand(newApplyCmd())
 	cmd.AddCommand(newStatusCmd())
 	return cmd
