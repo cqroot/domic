@@ -26,7 +26,7 @@ func Run() error {
 	for _, app := range apps {
 		rawTarget, ok := config.TargetForOS(app)
 		if !ok {
-			fmt.Printf("[%s] skipped (no target for current OS)\n", app.Name)
+			fmt.Printf("[%s] %s (no target for current OS)\n", app.Name, paint(ansiGray, "skipped"))
 			continue
 		}
 		target, err := config.ExpandHome(rawTarget)
@@ -99,7 +99,7 @@ func processFile(name, source, target string, cache cache) error {
 			return fmt.Errorf("copy: %w", err)
 		}
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] applied %s\n", name, target)
+		fmt.Printf("[%s] %s %s\n", name, paint(ansiGreen, "applied"), target)
 		return nil
 	}
 
@@ -114,7 +114,7 @@ func processFile(name, source, target string, cache cache) error {
 
 	if targetMD5 == sourceMD5 {
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] up to date %s\n", name, target)
+		fmt.Printf("[%s] %s %s\n", name, paint(ansiGreen, "up to date"), target)
 		return nil
 	}
 
@@ -123,11 +123,11 @@ func processFile(name, source, target string, cache cache) error {
 			return fmt.Errorf("copy: %w", err)
 		}
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] applied %s\n", name, target)
+		fmt.Printf("[%s] %s %s\n", name, paint(ansiGreen, "applied"), target)
 		return nil
 	}
 
-	fmt.Printf("[%s] target already exists and differs from source\n  source: %s\n  target: %s\n", name, source, target)
+	fmt.Printf("[%s] %s\n  source: %s\n  target: %s\n", name, paint(ansiYellow, "target already exists and differs from source"), source, target)
 	return nil
 }
 
@@ -148,4 +148,21 @@ func copyFile(source, target string) error {
 		return err
 	}
 	return nil
+}
+
+const (
+	ansiReset = "\033[0m"
+	ansiRed   = "\033[31m"
+	ansiGreen = "\033[32m"
+	ansiYellow = "\033[33m"
+	ansiGray  = "\033[90m"
+)
+
+var colorEnabled = os.Getenv("NO_COLOR") == ""
+
+func paint(color, s string) string {
+	if !colorEnabled {
+		return s
+	}
+	return color + s + ansiReset
 }
