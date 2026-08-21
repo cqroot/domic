@@ -20,6 +20,7 @@ func Run() error {
 	}
 
 	base := config.SourceBase()
+	cache := loadCache()
 	var errs []string
 
 	for _, app := range apps {
@@ -34,9 +35,13 @@ func Run() error {
 			continue
 		}
 		source := filepath.Join(base, app.Path)
-		if err := applyEntry(app.Name, source, target); err != nil {
+		if err := applyEntry(app.Name, source, target, cache); err != nil {
 			errs = append(errs, fmt.Sprintf("%s: %v", app.Name, err))
 		}
+	}
+
+	if err := cache.save(); err != nil {
+		errs = append(errs, fmt.Sprintf("save cache: %v", err))
 	}
 
 	if len(errs) > 0 {
@@ -45,7 +50,7 @@ func Run() error {
 	return nil
 }
 
-func applyEntry(name, source, target string) error {
+func applyEntry(name, source, target string, cache cache) error {
 	info, err := os.Stat(source)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -54,12 +59,12 @@ func applyEntry(name, source, target string) error {
 		return fmt.Errorf("stat source %s: %w", source, err)
 	}
 	if info.IsDir() {
-		return walkAndApply(name, source, target)
+		return walkAndApply(name, source, target, cache)
 	}
-	return processFile(name, source, target)
+	return processFile(name, source, target, cache)
 }
 
-func walkAndApply(name, sourceDir, targetDir string) error {
+func walkAndApply(name, sourceDir, targetDir string, cache cache) error {
 	return filepath.WalkDir(sourceDir, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
@@ -71,13 +76,18 @@ func walkAndApply(name, sourceDir, targetDir string) error {
 		if err != nil {
 			return err
 		}
-		return processFile(name, path, filepath.Join(targetDir, rel))
+		return processFile(name, path, filepath.Join(targetDir, rel), cache)
 	})
 }
 
-func processFile(name, source, target string) error {
+func processFile(name, source, target string, cache cache) error {
 	if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
 		return fmt.Errorf("create parent dir: %w", err)
+	}
+
+	sourceMD5, err := fileutil.MD5(source)
+	if err != nil {
+		return fmt.Errorf("hash source: %w", err)
 	}
 
 	targetInfo, statErr := os.Stat(target)
@@ -88,6 +98,7 @@ func processFile(name, source, target string) error {
 		if err := copyFile(source, target); err != nil {
 			return fmt.Errorf("copy: %w", err)
 		}
+		cache.set(target, sourceMD5)
 		fmt.Printf("[%s] applied %s\n", name, target)
 		return nil
 	}
@@ -96,14 +107,26 @@ func processFile(name, source, target string) error {
 		return fmt.Errorf("target %s is a directory, expected file", target)
 	}
 
-	same, err := fileutil.SameContents(source, target)
+	targetMD5, err := fileutil.MD5(target)
 	if err != nil {
-		return err
+		return fmt.Errorf("hash target: %w", err)
 	}
-	if same {
+
+	if targetMD5 == sourceMD5 {
+		cache.set(target, sourceMD5)
 		fmt.Printf("[%s] up to date %s\n", name, target)
 		return nil
 	}
+
+	if recorded, ok := cache.get(target); ok && recorded == targetMD5 {
+		if err := copyFile(source, target); err != nil {
+			return fmt.Errorf("copy: %w", err)
+		}
+		cache.set(target, sourceMD5)
+		fmt.Printf("[%s] applied %s\n", name, target)
+		return nil
+	}
+
 	fmt.Printf("[%s] target already exists and differs from source\n  source: %s\n  target: %s\n", name, source, target)
 	return nil
 }
