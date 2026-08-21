@@ -19,14 +19,16 @@ type AppTarget struct {
 }
 
 type appConfig struct {
-	Path   string    `toml:"path"`
-	Target AppTarget `toml:"target"`
+	Path     string    `toml:"path"`
+	Target   AppTarget `toml:"target"`
+	Template bool      `toml:"template"`
 }
 
 type App struct {
-	Name   string
-	Path   string
-	Target AppTarget
+	Name     string
+	Path     string
+	Target   AppTarget
+	Template bool
 }
 
 var (
@@ -61,9 +63,10 @@ func Load(file string) error {
 	apps = make([]App, 0, len(raw))
 	for name, a := range raw {
 		apps = append(apps, App{
-			Name:   name,
-			Path:   a.Path,
-			Target: a.Target,
+			Name:     name,
+			Path:     a.Path,
+			Target:   a.Target,
+			Template: a.Template,
 		})
 	}
 	sort.Slice(apps, func(i, j int) bool {

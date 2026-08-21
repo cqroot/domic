@@ -3,7 +3,6 @@ package apply
 import (
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,7 +34,7 @@ func Run() error {
 			continue
 		}
 		source := filepath.Join(base, app.Path)
-		if err := applyEntry(app.Name, source, target, cache); err != nil {
+		if err := applyEntry(app, source, target, cache); err != nil {
 			errs = append(errs, fmt.Sprintf("%s: %v", app.Name, err))
 		}
 	}
@@ -50,7 +49,7 @@ func Run() error {
 	return nil
 }
 
-func applyEntry(name, source, target string, cache cache) error {
+func applyEntry(app config.App, source, target string, cache cache) error {
 	info, err := os.Stat(source)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -59,12 +58,12 @@ func applyEntry(name, source, target string, cache cache) error {
 		return fmt.Errorf("stat source %s: %w", source, err)
 	}
 	if info.IsDir() {
-		return walkAndApply(name, source, target, cache)
+		return walkAndApply(app, source, target, cache)
 	}
-	return processFile(name, source, target, cache)
+	return processFile(app, source, target, cache)
 }
 
-func walkAndApply(name, sourceDir, targetDir string, cache cache) error {
+func walkAndApply(app config.App, sourceDir, targetDir string, cache cache) error {
 	return filepath.WalkDir(sourceDir, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
@@ -76,30 +75,35 @@ func walkAndApply(name, sourceDir, targetDir string, cache cache) error {
 		if err != nil {
 			return err
 		}
-		return processFile(name, path, filepath.Join(targetDir, rel), cache)
+		target := filepath.Join(targetDir, rel)
+		if isTemplateSource(app.Name, app.Template, path) {
+			target = templateTarget(target)
+		}
+		return processFile(app, path, target, cache)
 	})
 }
 
-func processFile(name, source, target string, cache cache) error {
+func processFile(app config.App, source, target string, cache cache) error {
 	if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
 		return fmt.Errorf("create parent dir: %w", err)
 	}
 
-	sourceMD5, err := fileutil.MD5(source)
+	distributed, err := buildDistributed(app, source)
 	if err != nil {
-		return fmt.Errorf("hash source: %w", err)
+		return err
 	}
+	sourceMD5 := md5Bytes(distributed)
 
 	targetInfo, statErr := os.Stat(target)
 	if statErr != nil {
 		if !errors.Is(statErr, os.ErrNotExist) {
 			return fmt.Errorf("stat target: %w", statErr)
 		}
-		if err := copyFile(source, target); err != nil {
-			return fmt.Errorf("copy: %w", err)
+		if err := os.WriteFile(target, distributed, 0o644); err != nil {
+			return fmt.Errorf("write: %w", err)
 		}
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] %s %s\n", name, paint(ansiGreen, "applied"), target)
+		fmt.Printf("[%s] %s %s\n", app.Name, paint(ansiGreen, "applied"), target)
 		return nil
 	}
 
@@ -114,48 +118,40 @@ func processFile(name, source, target string, cache cache) error {
 
 	if targetMD5 == sourceMD5 {
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] %s %s\n", name, paint(ansiGreen, "up to date"), target)
+		fmt.Printf("[%s] %s %s\n", app.Name, paint(ansiGreen, "up to date"), target)
 		return nil
 	}
 
 	if recorded, ok := cache.get(target); ok && recorded == targetMD5 {
-		if err := copyFile(source, target); err != nil {
-			return fmt.Errorf("copy: %w", err)
+		if err := os.WriteFile(target, distributed, 0o644); err != nil {
+			return fmt.Errorf("write: %w", err)
 		}
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] %s %s\n", name, paint(ansiGreen, "applied"), target)
+		fmt.Printf("[%s] %s %s\n", app.Name, paint(ansiGreen, "applied"), target)
 		return nil
 	}
 
-	fmt.Printf("[%s] %s\n  source: %s\n  target: %s\n", name, paint(ansiYellow, "target already exists and differs from source"), source, target)
+	fmt.Printf("[%s] %s\n  source: %s\n  target: %s\n", app.Name, paint(ansiYellow, "target already exists and differs from source"), source, target)
 	return nil
 }
 
-func copyFile(source, target string) error {
-	src, err := os.Open(source)
+func buildDistributed(app config.App, source string) ([]byte, error) {
+	if isTemplateSource(app.Name, app.Template, source) {
+		return renderTemplate(source)
+	}
+	data, err := os.ReadFile(source)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("read source %s: %w", source, err)
 	}
-	defer src.Close()
-
-	dst, err := os.OpenFile(target, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-
-	if _, err := io.Copy(dst, src); err != nil {
-		return err
-	}
-	return nil
+	return data, nil
 }
 
 const (
-	ansiReset = "\033[0m"
-	ansiRed   = "\033[31m"
-	ansiGreen = "\033[32m"
+	ansiReset  = "\033[0m"
+	ansiRed    = "\033[31m"
+	ansiGreen  = "\033[32m"
 	ansiYellow = "\033[33m"
-	ansiGray  = "\033[90m"
+	ansiGray   = "\033[90m"
 )
 
 var colorEnabled = os.Getenv("NO_COLOR") == ""
