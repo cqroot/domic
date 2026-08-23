@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/cqroot/domic/internal/config"
+	"github.com/cqroot/domic/internal/distribute"
 	"github.com/cqroot/domic/internal/fileutil"
 )
 
@@ -99,7 +100,7 @@ func Run() error {
 			continue
 		}
 		source := filepath.Join(base, app.Path)
-		result, err := inspect(app.Name, source, target)
+		result, err := inspect(app, source, target)
 		if err != nil {
 			errs = append(errs, fmt.Sprintf("%s: %v", app.Name, err))
 			continue
@@ -115,7 +116,7 @@ func Run() error {
 	return nil
 }
 
-func inspect(name, source, target string) (AppResult, error) {
+func inspect(app config.App, source, target string) (AppResult, error) {
 	info, err := os.Stat(source)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -124,25 +125,26 @@ func inspect(name, source, target string) (AppResult, error) {
 		return AppResult{}, fmt.Errorf("stat source %s: %w", source, err)
 	}
 	if info.IsDir() {
-		return inspectDir(name, source, target)
+		return inspectDir(app, source, target)
 	}
-	return inspectFile(name, source, target)
+	return inspectFile(app, source, target)
 }
 
-func inspectFile(name, source, target string) (AppResult, error) {
-	state, err := compareFile(source, target)
+func inspectFile(app config.App, source, target string) (AppResult, error) {
+	effectiveTarget := distribute.Target(app, source, target)
+	state, err := compareDistributed(app, source, effectiveTarget)
 	if err != nil {
 		return AppResult{}, err
 	}
 	return AppResult{
-		Name:   name,
+		Name:   app.Name,
 		Source: source,
-		Target: target,
+		Target: effectiveTarget,
 		State:  appStateForSingle(state),
 	}, nil
 }
 
-func inspectDir(name, sourceDir, targetDir string) (AppResult, error) {
+func inspectDir(app config.App, sourceDir, targetDir string) (AppResult, error) {
 	var files []FileResult
 	err := filepath.WalkDir(sourceDir, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil {
@@ -155,13 +157,15 @@ func inspectDir(name, sourceDir, targetDir string) (AppResult, error) {
 		if err != nil {
 			return err
 		}
-		state, err := compareFile(path, filepath.Join(targetDir, rel))
+		target := filepath.Join(targetDir, rel)
+		effectiveTarget := distribute.Target(app, path, target)
+		state, err := compareDistributed(app, path, effectiveTarget)
 		if err != nil {
 			return err
 		}
 		files = append(files, FileResult{
 			Source: path,
-			Target: filepath.Join(targetDir, rel),
+			Target: effectiveTarget,
 			State:  state,
 		})
 		return nil
@@ -173,7 +177,7 @@ func inspectDir(name, sourceDir, targetDir string) (AppResult, error) {
 		return files[i].Target < files[j].Target
 	})
 	return AppResult{
-		Name:   name,
+		Name:   app.Name,
 		Source: sourceDir,
 		Target: targetDir,
 		State:  aggregateFileStates(files),
@@ -181,7 +185,7 @@ func inspectDir(name, sourceDir, targetDir string) (AppResult, error) {
 	}, nil
 }
 
-func compareFile(source, target string) (FileState, error) {
+func compareDistributed(app config.App, source, target string) (FileState, error) {
 	targetInfo, err := os.Stat(target)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -192,11 +196,15 @@ func compareFile(source, target string) (FileState, error) {
 	if targetInfo.IsDir() {
 		return 0, fmt.Errorf("target %s is a directory", target)
 	}
-	same, err := fileutil.SameContents(source, target)
+	distributed, err := distribute.Build(app, source)
 	if err != nil {
 		return 0, err
 	}
-	if same {
+	targetMD5, err := fileutil.MD5(target)
+	if err != nil {
+		return 0, err
+	}
+	if distribute.MD5(distributed) == targetMD5 {
 		return FileOK, nil
 	}
 	return FileModified, nil

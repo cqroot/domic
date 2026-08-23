@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/cqroot/domic/internal/config"
+	"github.com/cqroot/domic/internal/distribute"
 	"github.com/cqroot/domic/internal/fileutil"
 )
 
@@ -75,10 +76,7 @@ func walkAndApply(app config.App, sourceDir, targetDir string, cache cache) erro
 		if err != nil {
 			return err
 		}
-		target := filepath.Join(targetDir, rel)
-		if isTemplateSource(app.Name, app.Template, path) {
-			target = templateTarget(target)
-		}
+		target := distribute.Target(app, path, filepath.Join(targetDir, rel))
 		return processFile(app, path, target, cache)
 	})
 }
@@ -88,11 +86,11 @@ func processFile(app config.App, source, target string, cache cache) error {
 		return fmt.Errorf("create parent dir: %w", err)
 	}
 
-	distributed, err := buildDistributed(app, source)
+	distributed, err := distribute.Build(app, source)
 	if err != nil {
 		return err
 	}
-	sourceMD5 := md5Bytes(distributed)
+	sourceMD5 := distribute.MD5(distributed)
 
 	targetInfo, statErr := os.Stat(target)
 	if statErr != nil {
@@ -133,17 +131,6 @@ func processFile(app config.App, source, target string, cache cache) error {
 
 	fmt.Printf("[%s] %s\n  source: %s\n  target: %s\n", app.Name, paint(ansiYellow, "target already exists and differs from source"), source, target)
 	return nil
-}
-
-func buildDistributed(app config.App, source string) ([]byte, error) {
-	if isTemplateSource(app.Name, app.Template, source) {
-		return renderTemplate(source)
-	}
-	data, err := os.ReadFile(source)
-	if err != nil {
-		return nil, fmt.Errorf("read source %s: %w", source, err)
-	}
-	return data, nil
 }
 
 const (
