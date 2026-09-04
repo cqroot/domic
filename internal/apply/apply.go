@@ -25,12 +25,12 @@ func Run() error {
 
 	for _, app := range apps {
 		if !app.BinAvailable() {
-			fmt.Printf("[%s] %s (binary %s not found)\n", app.Name, paint(ansiGray, "skipped"), app.Bin)
+			fmt.Printf("%-*s %s (binary %s not found)\n", nameColWidth, app.Name, paint(ansiGray, "skipped"), app.Bin)
 			continue
 		}
 		rawTarget, ok := config.TargetForOS(app)
 		if !ok {
-			fmt.Printf("[%s] %s (no target for current OS)\n", app.Name, paint(ansiGray, "skipped"))
+			fmt.Printf("%-*s %s (no target for current OS)\n", nameColWidth, app.Name, paint(ansiGray, "skipped"))
 			continue
 		}
 		target, err := config.ExpandHome(rawTarget)
@@ -105,7 +105,7 @@ func processFile(app config.App, source, target string, cache cache) error {
 			return fmt.Errorf("write: %w", err)
 		}
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] %s %s\n", app.Name, paint(ansiGreen, "applied"), target)
+		fmt.Printf("%-*s %s %s\n", nameColWidth, app.Name, paint(ansiGreen, "applied"), target)
 		return nil
 	}
 
@@ -120,7 +120,7 @@ func processFile(app config.App, source, target string, cache cache) error {
 
 	if targetMD5 == sourceMD5 {
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] %s %s\n", app.Name, paint(ansiGreen, "up to date"), target)
+		fmt.Printf("%-*s %s %s\n", nameColWidth, app.Name, paint(ansiGreen, "up to date"), target)
 		return nil
 	}
 
@@ -129,11 +129,11 @@ func processFile(app config.App, source, target string, cache cache) error {
 			return fmt.Errorf("write: %w", err)
 		}
 		cache.set(target, sourceMD5)
-		fmt.Printf("[%s] %s %s\n", app.Name, paint(ansiGreen, "applied"), target)
+		fmt.Printf("%-*s %s %s\n", nameColWidth, app.Name, paint(ansiGreen, "applied"), target)
 		return nil
 	}
 
-	fmt.Printf("[%s] %s\n  source: %s\n  target: %s\n", app.Name, paint(ansiYellow, "target already exists and differs from source"), source, target)
+	fmt.Printf("%-*s %s\n  source: %s\n  target: %s\n", nameColWidth, app.Name, paint(ansiYellow, "target already exists and differs from source"), source, target)
 	return nil
 }
 
@@ -143,6 +143,8 @@ const (
 	ansiGreen  = "\033[32m"
 	ansiYellow = "\033[33m"
 	ansiGray   = "\033[90m"
+
+	nameColWidth = 15
 )
 
 var colorEnabled = os.Getenv("NO_COLOR") == ""
