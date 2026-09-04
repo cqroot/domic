@@ -19,6 +19,12 @@ type AppTarget struct {
 	Darwin  string `toml:"darwin"`
 }
 
+// Prefs holds optional top-level user preferences loaded from
+// domic.config.toml in the config directory.
+type Prefs struct {
+	Diff []string `toml:"diff"`
+}
+
 type appConfig struct {
 	Path     string    `toml:"path"`
 	Target   AppTarget `toml:"target"`
@@ -39,6 +45,7 @@ var (
 	apps       []App
 	configPath string
 	sourceBase string
+	prefs      Prefs
 )
 
 func Load(file string) error {
@@ -77,8 +84,37 @@ func Load(file string) error {
 		return apps[i].Name < apps[j].Name
 	})
 
+	if err := loadPrefs(); err != nil {
+		return err
+	}
+
 	loaded = true
 	return nil
+}
+
+func loadPrefs() error {
+	path := filepath.Join(xdg.ConfigHome, "domic", "domic.config.toml")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return fmt.Errorf("read %s: %w", path, err)
+	}
+	if _, err := toml.Decode(string(data), &prefs); err != nil {
+		return fmt.Errorf("parse %s: %w", path, err)
+	}
+	return nil
+}
+
+// DiffCommand returns the configured external diff command and its arguments.
+// The first element is the program name, the rest are arguments. Defaults to
+// `["diff", "-u"]`.
+func DiffCommand() []string {
+	if len(prefs.Diff) > 0 {
+		return prefs.Diff
+	}
+	return []string{"diff", "-u"}
 }
 
 func Apps() []App {

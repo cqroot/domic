@@ -86,8 +86,7 @@ func diffDir(app config.App, sourceDir, targetDir string) error {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	var shown bool
-	err = filepath.WalkDir(sourceDir, func(path string, d os.DirEntry, walkErr error) error {
+	return filepath.WalkDir(sourceDir, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
@@ -100,20 +99,15 @@ func diffDir(app config.App, sourceDir, targetDir string) error {
 		}
 		target := filepath.Join(targetDir, rel)
 		effectiveTarget := distribute.Target(app, path, target)
-		tmpFile, ok, err := prepareDiff(app, path, effectiveTarget, tmpDir)
+		sourcePath, ok, err := prepareDiff(app, path, effectiveTarget, tmpDir)
 		if err != nil {
 			return err
 		}
 		if !ok {
 			return nil
 		}
-		if !shown {
-			fmt.Printf("=== %s ===\n", app.Name)
-			shown = true
-		}
-		return runDiff(tmpFile, effectiveTarget)
+		return runDiff(sourcePath, effectiveTarget)
 	})
-	return err
 }
 
 func diffFile(app config.App, source, target string) error {
@@ -123,20 +117,21 @@ func diffFile(app config.App, source, target string) error {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	tmpFile, ok, err := prepareDiff(app, source, target, tmpDir)
+	sourcePath, ok, err := prepareDiff(app, source, target, tmpDir)
 	if err != nil {
 		return err
 	}
 	if !ok {
 		return nil
 	}
-	fmt.Printf("=== %s ===\n", app.Name)
-	return runDiff(tmpFile, target)
+	return runDiff(sourcePath, target)
 }
 
-// prepareDiff writes the distributed bytes for `source` into tmpDir and returns
-// the resulting temp file path along with whether the target differs from those
-// bytes.
+// prepareDiff reports whether the target differs from the distributed bytes
+// for `source`, and returns the path to pass as the source argument to the
+// external diff command. For non-template sources the original source path is
+// returned; for template sources the rendered bytes are written to a temp
+// file and that path is returned.
 func prepareDiff(app config.App, source, target, tmpDir string) (string, bool, error) {
 	distributed, err := distribute.Build(app, source)
 	if err != nil {
@@ -159,22 +154,31 @@ func prepareDiff(app config.App, source, target, tmpDir string) (string, bool, e
 		return "", false, fmt.Errorf("stat target: %w", statErr)
 	}
 
-	tmpFile := filepath.Join(tmpDir, filepath.Base(source))
-	if err := os.WriteFile(tmpFile, distributed, 0o644); err != nil {
-		return "", false, fmt.Errorf("write temp: %w", err)
+	if distribute.IsTemplate(app, source) {
+		tmpFile := filepath.Join(tmpDir, filepath.Base(source))
+		if err := os.WriteFile(tmpFile, distributed, 0o644); err != nil {
+			return "", false, fmt.Errorf("write temp: %w", err)
+		}
+		return tmpFile, true, nil
 	}
-	return tmpFile, true, nil
+	return source, true, nil
 }
 
 func runDiff(source, target string) error {
-	if _, err := exec.LookPath("diff"); err != nil {
-		return fmt.Errorf("diff command not found in PATH: %w", err)
+	cmdArgs := config.DiffCommand()
+	if len(cmdArgs) == 0 {
+		return fmt.Errorf("diff command not configured")
+	}
+	program, err := exec.LookPath(cmdArgs[0])
+	if err != nil {
+		return fmt.Errorf("%s not found in PATH: %w", cmdArgs[0], err)
 	}
 	targetArg := target
 	if _, err := os.Stat(target); errors.Is(err, os.ErrNotExist) {
 		targetArg = os.DevNull
 	}
-	cmd := exec.Command("diff", "-u", source, targetArg)
+	args := append(append([]string{}, cmdArgs[1:]...), source, targetArg)
+	cmd := exec.Command(program, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
