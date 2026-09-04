@@ -25,7 +25,7 @@ func newRootCmd() *cobra.Command {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return status.Run(status.Options{ShowFiles: verbose})
+			return status.Run(status.Options{ShowFiles: resolveVerbose(cmd)})
 		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if cmd.Name() == "init" {
@@ -43,4 +43,14 @@ func newRootCmd() *cobra.Command {
 	cmd.AddCommand(newDiffCmd())
 	cmd.AddCommand(newConfigDirCmd())
 	return cmd
+}
+
+// resolveVerbose returns the verbose flag value with the user prefs from
+// domic.config.toml as the fallback. CLI flag takes precedence.
+func resolveVerbose(cmd *cobra.Command) bool {
+	if cmd.Flags().Changed("verbose") {
+		v, _ := cmd.Flags().GetBool("verbose")
+		return v
+	}
+	return config.Verbose()
 }

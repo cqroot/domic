@@ -22,7 +22,8 @@ type AppTarget struct {
 // Prefs holds optional top-level user preferences loaded from
 // domic.config.toml in the config directory.
 type Prefs struct {
-	Diff []string `toml:"diff"`
+	Diff    []string `toml:"diff"`
+	Verbose bool     `toml:"verbose"`
 }
 
 type appConfig struct {
@@ -115,6 +116,11 @@ func DiffCommand() []string {
 		return prefs.Diff
 	}
 	return []string{"diff", "-u"}
+}
+
+// Verbose reports whether verbose mode is enabled in the user prefs.
+func Verbose() bool {
+	return prefs.Verbose
 }
 
 func Apps() []App {
