@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -22,6 +23,7 @@ type appConfig struct {
 	Path     string    `toml:"path"`
 	Target   AppTarget `toml:"target"`
 	Template bool      `toml:"template"`
+	Bin      string    `toml:"bin"`
 }
 
 type App struct {
@@ -29,6 +31,7 @@ type App struct {
 	Path     string
 	Target   AppTarget
 	Template bool
+	Bin      string
 }
 
 var (
@@ -67,6 +70,7 @@ func Load(file string) error {
 			Path:     a.Path,
 			Target:   a.Target,
 			Template: a.Template,
+			Bin:      a.Bin,
 		})
 	}
 	sort.Slice(apps, func(i, j int) bool {
@@ -129,4 +133,12 @@ func TargetForOS(app App) (string, bool) {
 		return "", false
 	}
 	return raw, true
+}
+
+func (a App) BinAvailable() bool {
+	if a.Bin == "" {
+		return true
+	}
+	_, err := exec.LookPath(a.Bin)
+	return err == nil
 }

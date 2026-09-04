@@ -24,6 +24,10 @@ func Run() error {
 	var errs []string
 
 	for _, app := range apps {
+		if !app.BinAvailable() {
+			fmt.Printf("[%s] %s (binary %s not found)\n", app.Name, paint(ansiGray, "skipped"), app.Bin)
+			continue
+		}
 		rawTarget, ok := config.TargetForOS(app)
 		if !ok {
 			fmt.Printf("[%s] %s (no target for current OS)\n", app.Name, paint(ansiGray, "skipped"))

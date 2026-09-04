@@ -89,6 +89,14 @@ func Run(opts Options) error {
 	var errs []string
 
 	for _, app := range apps {
+		if !app.BinAvailable() {
+			results = append(results, AppResult{
+				Name:   app.Name,
+				Source: filepath.Join(base, app.Path),
+				State:  AppSkipped,
+			})
+			continue
+		}
 		rawTarget, ok := config.TargetForOS(app)
 		if !ok {
 			results = append(results, AppResult{
