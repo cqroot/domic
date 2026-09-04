@@ -65,6 +65,10 @@ type FileResult struct {
 	State  FileState
 }
 
+type Options struct {
+	ShowFiles bool
+}
+
 type AppResult struct {
 	Name   string
 	Source string
@@ -73,7 +77,7 @@ type AppResult struct {
 	Files  []FileResult
 }
 
-func Run() error {
+func Run(opts Options) error {
 	apps := config.Apps()
 	if len(apps) == 0 {
 		fmt.Println("no apps configured")
@@ -104,6 +108,9 @@ func Run() error {
 		if err != nil {
 			errs = append(errs, fmt.Sprintf("%s: %v", app.Name, err))
 			continue
+		}
+		if !opts.ShowFiles {
+			result.Files = nil
 		}
 		results = append(results, result)
 	}

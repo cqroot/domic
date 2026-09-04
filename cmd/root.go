@@ -17,6 +17,7 @@ func Execute() {
 }
 
 func newRootCmd() *cobra.Command {
+	var quiet bool
 	cmd := &cobra.Command{
 		Use:           "domic",
 		Short:         "A config-based cross-platform dotfiles manager",
@@ -24,7 +25,7 @@ func newRootCmd() *cobra.Command {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return status.Run()
+			return status.Run(status.Options{ShowFiles: !quiet})
 		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if cmd.Name() == "init" {
@@ -35,6 +36,7 @@ func newRootCmd() *cobra.Command {
 		},
 	}
 	cmd.PersistentFlags().String("config", "", "path to config file (default is $XDG_CONFIG_HOME/domic/domic.toml)")
+	cmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "hide per-file status rows")
 	cmd.AddCommand(newInitCmd())
 	cmd.AddCommand(newApplyCmd())
 	cmd.AddCommand(newStatusCmd())
