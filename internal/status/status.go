@@ -256,11 +256,36 @@ func printResults(results []AppResult) {
 		paintHeader(0, "TARGET"),
 	)
 	for _, r := range results {
-		fmt.Printf("%-*s %s %s\n", nameColWidth, r.Name, paintAppState(r.State), r.Target)
+		fmt.Printf("%-*s %s %s\n", nameColWidth, r.Name, paintAppState(r.State), paintTarget(r.Source, r.Target))
 		for _, f := range r.Files {
-			fmt.Printf("%-*s %s %s\n", nameColWidth, "  ", paintFileState(f.State), f.Target)
+			fmt.Printf("%-*s %s %s\n", nameColWidth, "  ", paintFileState(f.State), paintTarget(f.Source, f.Target))
 		}
 	}
+}
+
+func paintTarget(source, target string) string {
+	prefix := commonPathPrefix(source, target)
+	if prefix == "" {
+		return target
+	}
+	return paint(ansiCyan, prefix) + strings.TrimPrefix(target, prefix)
+}
+
+func commonPathPrefix(a, b string) string {
+	aParts := strings.Split(filepath.Clean(a), string(filepath.Separator))
+	bParts := strings.Split(filepath.Clean(b), string(filepath.Separator))
+	n := len(aParts)
+	if len(bParts) < n {
+		n = len(bParts)
+	}
+	i := 0
+	for i < n && aParts[i] == bParts[i] {
+		i++
+	}
+	if i == 0 {
+		return ""
+	}
+	return strings.Join(aParts[:i], string(filepath.Separator))
 }
 
 const (
@@ -272,6 +297,7 @@ const (
 	ansiRed    = "\033[31m"
 	ansiGreen  = "\033[32m"
 	ansiYellow = "\033[33m"
+	ansiCyan   = "\033[36m"
 	ansiGray   = "\033[90m"
 )
 
