@@ -10,7 +10,7 @@ func newStatusCmd() *cobra.Command {
 		Use:   "status",
 		Short: "List all configured apps and their sync status",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return status.Run(status.Options{ShowFiles: resolveVerbose(cmd)})
+			return status.Run(status.Options{Verbose: resolveVerbose(cmd)})
 		},
 	}
 }

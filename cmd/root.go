@@ -25,7 +25,7 @@ func newRootCmd() *cobra.Command {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return status.Run(status.Options{ShowFiles: resolveVerbose(cmd)})
+			return status.Run(status.Options{Verbose: resolveVerbose(cmd)})
 		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if cmd.Name() == "init" {

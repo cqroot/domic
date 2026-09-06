@@ -66,7 +66,7 @@ type FileResult struct {
 }
 
 type Options struct {
-	ShowFiles bool
+	Verbose bool
 }
 
 type AppResult struct {
@@ -117,10 +117,21 @@ func Run(opts Options) error {
 			errs = append(errs, fmt.Sprintf("%s: %v", app.Name, err))
 			continue
 		}
-		if !opts.ShowFiles {
+		if !opts.Verbose {
 			result.Files = nil
 		}
 		results = append(results, result)
+	}
+
+	if !opts.Verbose {
+		filtered := results[:0]
+		for _, r := range results {
+			if r.State == AppSkipped {
+				continue
+			}
+			filtered = append(filtered, r)
+		}
+		results = filtered
 	}
 
 	printResults(results)
