@@ -177,5 +177,15 @@ function dmcd
 end
 ```
 
+### PowerShell
+
+Add to your `$PROFILE`:
+
+```powershell
+function dmcd {
+    Set-Location (domic configdir)
+}
+```
+
 After reloading the shell (or sourcing the rc file), running `dmcd` will
 `cd` into `~/.config/domic` (or the platform-equivalent path).
