@@ -26,7 +26,11 @@ import (
 	"github.com/cqroot/domic/internal/fileutil"
 )
 
-func Run() error {
+type Options struct {
+	Verbose bool
+}
+
+func Run(opts Options) error {
 	apps := config.Apps()
 	if len(apps) == 0 {
 		fmt.Println("no apps configured")
@@ -39,12 +43,16 @@ func Run() error {
 
 	for _, app := range apps {
 		if !app.BinAvailable() {
-			fmt.Printf("%-*s %s (binary %s not found)\n", nameColWidth, app.Name, paint(ansiGray, "skipped"), app.Bin)
+			if opts.Verbose {
+				fmt.Printf("%-*s %s (binary %s not found)\n", nameColWidth, app.Name, paint(ansiGray, "skipped"), app.Bin)
+			}
 			continue
 		}
 		rawTarget, ok := config.TargetForOS(app)
 		if !ok {
-			fmt.Printf("%-*s %s (no target for current OS)\n", nameColWidth, app.Name, paint(ansiGray, "skipped"))
+			if opts.Verbose {
+				fmt.Printf("%-*s %s (no target for current OS)\n", nameColWidth, app.Name, paint(ansiGray, "skipped"))
+			}
 			continue
 		}
 		target, err := config.ExpandHome(rawTarget)

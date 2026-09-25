@@ -24,7 +24,7 @@ func newApplyCmd() *cobra.Command {
 		Use:   "apply",
 		Short: "Apply configured apps to their target paths",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return apply.Run()
+			return apply.Run(apply.Options{Verbose: resolveVerbose(cmd)})
 		},
 	}
 }
