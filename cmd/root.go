@@ -20,6 +20,7 @@ import (
 
 	"github.com/cqroot/domic/internal/config"
 	"github.com/cqroot/domic/internal/status"
+	"github.com/cqroot/domic/internal/version"
 	"github.com/spf13/cobra"
 )
 
@@ -56,6 +57,7 @@ func newRootCmd() *cobra.Command {
 	cmd.AddCommand(newStatusCmd())
 	cmd.AddCommand(newDiffCmd())
 	cmd.AddCommand(newConfigDirCmd())
+	cmd.Version = version.Get().String()
 	return cmd
 }
 
