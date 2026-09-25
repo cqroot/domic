@@ -13,9 +13,9 @@ builds:
       - darwin
     ldflags:
       - -s -w
-      - -X github.com/cqroot/minop/pkg/version.version={{.Version}}
-      - -X github.com/cqroot/minop/pkg/version.commit={{.Commit}}
-      - -X github.com/cqroot/minop/pkg/version.date={{.Date}}
+      - -X github.com/cqroot/domic/internal/version.version={{.Version}}
+      - -X github.com/cqroot/domic/internal/version.commit={{.Commit}}
+      - -X github.com/cqroot/domic/internal/version.date={{.Date}}
 
 archives:
   - formats: [tar.gz]
