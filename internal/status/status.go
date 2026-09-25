@@ -176,11 +176,20 @@ func inspectFile(app config.App, source, target string) (AppResult, error) {
 	if err != nil {
 		return AppResult{}, err
 	}
+	var appState AppState
+	switch state {
+	case FileOK:
+		appState = AppOK
+	case FileMissing:
+		appState = AppMissing
+	case FileModified:
+		appState = AppModified
+	}
 	return AppResult{
 		Name:   app.Name,
 		Source: source,
 		Target: effectiveTarget,
-		State:  appStateForSingle(state),
+		State:  appState,
 	}, nil
 }
 
@@ -248,18 +257,6 @@ func compareDistributed(app config.App, source, target string) (FileState, error
 		return FileOK, nil
 	}
 	return FileModified, nil
-}
-
-func appStateForSingle(s FileState) AppState {
-	switch s {
-	case FileOK:
-		return AppOK
-	case FileMissing:
-		return AppMissing
-	case FileModified:
-		return AppModified
-	}
-	return 0
 }
 
 func aggregateFileStates(files []FileResult) AppState {

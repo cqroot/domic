@@ -33,15 +33,3 @@ func MD5(path string) (string, error) {
 	}
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }
-
-func SameContents(a, b string) (bool, error) {
-	ha, err := MD5(a)
-	if err != nil {
-		return false, fmt.Errorf("hash %s: %w", a, err)
-	}
-	hb, err := MD5(b)
-	if err != nil {
-		return false, fmt.Errorf("hash %s: %w", b, err)
-	}
-	return ha == hb, nil
-}

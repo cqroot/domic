@@ -144,10 +144,6 @@ func Apps() []App {
 	return apps
 }
 
-func ConfigPath() string {
-	return configPath
-}
-
 func ConfigDir() string {
 	return filepath.Join(xdg.ConfigHome, "domic")
 }
